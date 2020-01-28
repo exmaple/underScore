@@ -1,3 +1,3 @@
 # underScore
 
-Is a news discord bot the reports the scores of your favourite teams.
+Is a news discord bot that reports the scores of your favourite teams.
