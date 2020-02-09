@@ -32,4 +32,9 @@ async def on_member_remove(member):
     print(f'{member} has left the server')
 
 
+@client.command()
+async def ping(ctx):
+    await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
+
+
 client.run(f"{args.token}")
