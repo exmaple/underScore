@@ -39,6 +39,7 @@ class Example(commands.Cog):
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
     @commands.command()
+    @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount)
 
