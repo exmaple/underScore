@@ -1,17 +1,23 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+from itertools import cycle
+
+status = cycle(["!help for more details", "!setup to configure bot"])
 
 
 class Example(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    # Tasks
+    @tasks.loop(seconds=10)
+    async def change_status(self):
+        await self.client.change_presence(activity=discord.Game(next(status)))
+
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.client.change_presence(
-            activity=discord.Game("!help for more details")
-        )
+        self.change_status.start()
         print("Bot is ready")
 
     @commands.Cog.listener()
