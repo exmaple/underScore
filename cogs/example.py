@@ -9,6 +9,9 @@ class Example(commands.Cog):
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
+        await self.client.change_presence(
+            activity=discord.Game("!help for more details")
+        )
         print("Bot is ready")
 
     @commands.Cog.listener()
