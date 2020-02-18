@@ -8,8 +8,9 @@ def load_extensions(bot, extensions):
     for extension in extensions:
         try:
             bot.load_extension(extension)
+            print(f"Extension {extension} loaded")
         except Exception as error:
-            print(f"{extension} cannot be loaded. [{error}]")
+            print(f"{error}")
 
 
 if __name__ == "__main__":
@@ -23,7 +24,7 @@ if __name__ == "__main__":
 
     @bot.event
     async def on_ready():
-        await bot.change_presence(activity=discord.Game(name="!help for more info"))
+        await bot.change_presence(activity=discord.Game(name="!help"))
         print("Bot online")
 
     extensions = ["cogs.stats"]
