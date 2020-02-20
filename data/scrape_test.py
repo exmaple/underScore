@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from argparse import ArgumentParser
+import unicodedata
 
 def fussballdatenpunktde(site_html):
     '''
@@ -30,32 +31,46 @@ def fussballdatenpunktde(site_html):
                 counter +=1
             if teams_string_list[2] == 'gegen' and len(teams_string_list) == 6:
                 # 1/1
-                teams_list.append((teams_string_list[1],score1))
-                teams_list.append((teams_string_list[3],score2))
+                team1 = umlaut(teams_string_list[1])
+                team2 = umlaut(teams_string_list[3])
+                teams_list.append((team1, score1))
+                teams_list.append((team2, score2))
             elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 7:
                 # 2/1
                 team1 = teams_string_list[1] + " " + teams_string_list[2]
                 team2 = teams_string_list[4]
-                teams_list.append((team1,score1))
-                teams_list.append((team2,score2))
+                team1 = umlaut(team1)
+                team2 = umlaut(team2)
+                teams_list.append((team1, score1))
+                teams_list.append((team2, score2))
             elif teams_string_list[2] == 'gegen' and len(teams_string_list) == 7:
                 # 1/2
                 team1 = teams_string_list[1]
                 team2 = teams_string_list[3] + " " + teams_string_list[4]
+                team1 = umlaut(team1)
+                team2 = umlaut(team2)
                 teams_list.append((team1, score1))
                 teams_list.append((team2, score2))
             elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 8:
                 # 2/2
                 team1 = teams_string_list[1] + " " + teams_string_list[2]
                 team2 = teams_string_list[4] + " " + teams_string_list[5]
+                team1 = umlaut(team1)
+                team2 = umlaut(team2)
                 teams_list.append((team1, score1))
                 teams_list.append((team2, score2))
 
             game_dict[game_count] = teams_list
             game_count += 1
+
     print(game_dict)
 
-
+def umlaut(word_with_umlaut):
+    if '\\xc3\\xb6' in word_with_umlaut:
+        word_with_umlaut = word_with_umlaut.replace('\\xc3\\xb6', 'ö')
+    elif '\\xc3\\xbc' in word_with_umlaut:
+        word_with_umlaut = word_with_umlaut.replace('\\xc3\\xbc', 'ü')
+    return word_with_umlaut
 
 def main():
     parser = ArgumentParser()
