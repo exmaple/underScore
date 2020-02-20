@@ -1,4 +1,5 @@
 # underScore
+![Python App CI](https://github.com/exmaple/underScore/workflows/Python%20App%20CI/badge.svg)
 
 Is a news discord bot that reports the scores of your favourite teams.
 
