@@ -30,3 +30,9 @@ $ export TOKEN=[bot-token]
 (venv)$ python bot.py
 ```
 Alternatively you can run the bot with the `--token` flag and give it a token other than the one set in your environment.
+
+### Tests
+```
+(venv)$ pip install -r test_requirements.txt
+(venv)$ pytest -v tests/
+```
