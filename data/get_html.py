@@ -1,8 +1,7 @@
 from argparse import ArgumentParser
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+import requests
 
-def main():
+def get_html():
     parser = ArgumentParser()
     parser.add_argument(
         "--matchday",
@@ -21,16 +20,20 @@ def main():
     matchday = f"{args.matchday}"
     season = f"{args.season}"
 
-    # https://www.fussballdaten.de/bundesliga/2020/14/
-    driver = webdriver.Firefox()
+
     url = 'https://www.fussballdaten.de/bundesliga/' + season[5:9] + '/' + matchday
-    driver.get(url)
+
+    page_source = requests.get(url)
     season = season.replace('/', '_')
     filename  = 'fussballdaten_' + season + '_' + matchday + '.html'
     f = open(filename, "w")
-    f.write(driver.page_source)
+    f.write(str(page_source.content))
     f.close()
-    driver.close()
+
+def main():
+    get_html()
+
+
 
 
 
