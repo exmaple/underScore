@@ -1,42 +1,13 @@
 from bs4 import BeautifulSoup
+from argparse import ArgumentParser
 
-def bundesliadotcom():
-    '''
-    bundesliga.com
-    '''
-    with open("bundesliga_matchday22.html") as fp:
-        soup = BeautifulSoup(fp, 'html.parser')
-
-    span = soup('span')
-    scores = []
-    for s in span:
-        if s.attrs == {u'_ngcontent-sc57': ''}:
-            scores.append(s.text)
-    print(scores)
-
-    teams = []
-    div = soup.find_all("div", {"class": "clubName"})
-    for d in div:
-        teams.append(d.text)
-    print(teams)
-
-
-def fussballdatenpunktde():
+def fussballdatenpunktde(site_html):
     '''
     fussballdaten.de
     view-source:https://www.fussballdaten.de/bundesliga/2020/12/
     '''
-    with open("fussballdaten_matchday12.html") as fp:
+    with open(f"{site_html.html}") as fp:
         soup = BeautifulSoup(fp, 'html.parser')
-
-    span = soup.find_all('span')
-    scores = []
-    for s in span:
-        try:
-            if s['id']:
-                scores.append(s.text)
-        except KeyError:
-            continue
 
     game_count = 0
     game_dict = {}
@@ -87,8 +58,17 @@ def fussballdatenpunktde():
 
 
 def main():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--html",
+        action="store",
+        required=True,
+        help="Raw HTML (ex. fussballdaten_matchday6.html)",
+    )
+    args = parser.parse_args()
+
     #bundesliadotcom()
-    fussballdatenpunktde()
+    fussballdatenpunktde(args)
 
 
 if __name__ == '__main__':
