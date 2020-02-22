@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from argparse import ArgumentParser
-import unicodedata
 
 
 def fussballdatenpunktde_matchday_results(site_html):
