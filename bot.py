@@ -27,7 +27,7 @@ if __name__ == "__main__":
         await bot.change_presence(activity=discord.Game(name="!help"))
         print("Bot online")
 
-    extensions = ["cogs.stats"]
+    extensions = ["cogs.stats_commands"]
     load_extensions(bot, extensions)
 
     if args.token:
