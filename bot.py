@@ -4,33 +4,35 @@ from argparse import ArgumentParser
 import os
 
 
-# Get token from command line for now
-parser = ArgumentParser()
-parser.add_argument(
-    "--token",
-    "-t",
-    action="store",
-    required=True,
-    help="Token from the developer portal",
-)
-args = parser.parse_args()
-
-# Simple bot setup
-client = commands.Bot(command_prefix="!")
+def load_extensions(bot, extensions):
+    for extension in extensions:
+        try:
+            bot.load_extension(extension)
+            print(f"Extension {extension} loaded")
+        except Exception as error:
+            print(f"{error}")
 
 
-@client.command()
-async def load(ctx, extension):
-    client.load_extension(f"cogs.{extension}")
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--token", "-t", action="store", help="Token from the developer portal",
+    )
+    args = parser.parse_args()
 
+    bot = commands.Bot(command_prefix="!")
 
-@client.command()
-async def unload(ctx, extension):
-    client.unload_extension(f"cogs.{extension}")
+    @bot.event
+    async def on_ready():
+        await bot.change_presence(activity=discord.Game(name="!help"))
+        print("Bot online")
 
+    extensions = ["cogs.stats_commands"]
+    load_extensions(bot, extensions)
 
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        client.load_extension(f"cogs.{filename[:-3]}")
+    if args.token:
+        run_token = args.token
+    else:
+        run_token = os.environ["TOKEN"]
 
-client.run(f"{args.token}")
+    bot.run(f"{run_token}")
