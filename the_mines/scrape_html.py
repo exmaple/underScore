@@ -7,15 +7,24 @@ def fussballdatenpunktde_matchday_results(site_html):
     fussballdaten.de
     view-source:https://www.fussballdaten.de/bundesliga/2020/12/
     """
-    # print(site_html)
+
     with open(f"{site_html}") as fp:
         soup = BeautifulSoup(fp, "html.parser")
 
-    game_count = 0
-    game_dict = {}
-    a_tag = soup("a")
-    for game_details in a_tag:
 
+    # game_count: used as a key in the dictionary of matches
+    game_count = 0
+
+    # game_dict looks like this:
+    # {0: [('Team Name', 'Score'),('Team Name', 'Score')], ... }
+    game_dict = {}
+
+    # Returns all 'a' tags within the html in a list. Equivalent to .find_all()
+    a_tag = soup("a")
+
+    # Loop through every tag returned and determine whether it contains the
+    # data we require.
+    for game_details in a_tag:
         if "id" in game_details.attrs and "class" in game_details.attrs:
             teams_list = []
             teams_string = game_details.get("title")
@@ -30,6 +39,9 @@ def fussballdatenpunktde_matchday_results(site_html):
                 score1 = scores[0]
                 score2 = scores[2]
                 counter += 1
+
+            # When the data is found we need to do some extra string
+            # manipulating to ensure the correct team name is returned.
             if teams_string_list[2] == "gegen" and len(teams_string_list) == 6:
                 # 1/1
                 team1 = umlaut(teams_string_list[1])
@@ -75,18 +87,5 @@ def umlaut(word_with_umlaut):
     return word_with_umlaut
 
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--html",
-        action="store",
-        required=True,
-        help="Raw HTML (ex. data/fussballdaten_matchday6.html)",
-    )
-    args = parser.parse_args()
-
-    fussballdatenpunktde_matchday_results(args)
-
-
 if __name__ == "__main__":
-    main()
+    fussballdatenpunktde_matchday_results(args)
