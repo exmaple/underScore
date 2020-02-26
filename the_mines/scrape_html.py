@@ -85,7 +85,3 @@ def umlaut(word_with_umlaut):
     elif "\\xc3\\xbc" in word_with_umlaut:
         word_with_umlaut = word_with_umlaut.replace("\\xc3\\xbc", "ü")
     return word_with_umlaut
-
-
-if __name__ == "__main__":
-    fussballdatenpunktde_matchday_results(args)
