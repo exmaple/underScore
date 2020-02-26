@@ -3,7 +3,7 @@ import shutil
 import os
 
 
-def get_html(matchday, season):
+def get_matchday_html(matchday, season):
 
     # - The URL of this website uses only the latter year in a season (2019/2020).
     # - season[5:9] selects the latter season.
@@ -27,8 +27,3 @@ def get_html(matchday, season):
         return filename
 
     return filename # should this be in the if statement or out here?
-
-
-if __name__ == "__main__":
-
-    get_html(matchday, season)
