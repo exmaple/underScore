@@ -30,7 +30,7 @@ def get_matchday_html(matchday, season):
         with open(filename, "w") as f:
             print("creating file..." + filename)
             f.write(str(page_source.content))
-            shutil.move(filename, "data/" + filename)
+            shutil.move(filename, "the_mines/data/" + filename)
     else:
         print("opening file... " + filename)
         return filename
