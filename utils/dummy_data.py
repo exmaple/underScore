@@ -2,6 +2,11 @@ from random import choice, randrange
 
 
 def get_dummy_data():
+    """Creates a series of randomized statistics
+
+    Returns:
+        series of ints and strings
+    """
     height = randrange(150, 200)
     weight = randrange(50, 110)
     position = choice(["GK", "CB", "CM", "ST"])

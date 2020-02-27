@@ -5,6 +5,12 @@ import os
 
 
 def load_extensions(bot, extensions):
+    """Load the extensions to the bot instance
+
+    Args:
+        bot (Bot): bot instance to load extensions to
+        extensions (list): all the extensions to load
+    """
     for extension in extensions:
         try:
             bot.load_extension(extension)
@@ -24,6 +30,7 @@ if __name__ == "__main__":
 
     @bot.event
     async def on_ready():
+        """Change bot display message once online"""
         await bot.change_presence(activity=discord.Game(name="!help"))
         print("Bot online")
 

@@ -3,14 +3,17 @@ from argparse import ArgumentParser
 
 
 def fussballdatenpunktde_matchday_results(site_html):
-    """
-    fussballdaten.de
-    view-source:https://www.fussballdaten.de/bundesliga/2020/12/
-    """
+    """Process fussballdaten html into statistics
 
+    Notes:
+        - fussballdaten.de
+        - view-source:https://www.fussballdaten.de/bundesliga/2020/12/
+
+    Args:
+        site_html (str): html page to parse
+    """
     with open(f"{site_html}") as fp:
         soup = BeautifulSoup(fp, "html.parser")
-
 
     # game_count: used as a key in the dictionary of matches
     game_count = 0
@@ -80,6 +83,14 @@ def fussballdatenpunktde_matchday_results(site_html):
 
 
 def umlaut(word_with_umlaut):
+    """Insert accented chars where applicable
+
+    Args:
+        word_with_umlaut (str): word containing unprocessed accented char
+
+    Returns:
+        processed word
+    """
     if "\\xc3\\xb6" in word_with_umlaut:
         word_with_umlaut = word_with_umlaut.replace("\\xc3\\xb6", "ö")
     elif "\\xc3\\xbc" in word_with_umlaut:

@@ -2,7 +2,15 @@ import discord
 
 
 def embedded_stats(title, **stats):
-    """Build embedded message with player statistics"""
+    """Build embedded message with player statistics
+
+    Args:
+        title (str): title of the embedded message
+        **stats (dict): all stats to add as fields
+
+    Returns:
+        embed message object
+    """
     embed = discord.Embed(title=title, color=0xDC052D)
     embed.set_thumbnail(url="https://clipartart.com/images/bavaria-logo-clipart.jpg")
 
