@@ -79,7 +79,7 @@ def fussballdatenpunktde_matchday_results(site_html):
             game_dict[game_count] = teams_list
             game_count += 1
 
-    print(game_dict)
+    return game_dict
 
 
 def umlaut(word_with_umlaut):
