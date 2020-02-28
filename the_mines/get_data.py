@@ -6,7 +6,6 @@ from scrape_html import fussballdatenpunktde_matchday_results
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-
     parser.add_argument(
         "--matchday", action="store", required=True, help="ex. 8",
     )
@@ -15,10 +14,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-
-    '''
-    Get data
-    '''
+    # Collect html file and process data
     html_file = get_matchday_html(args.matchday, args.season)
-
     fussballdatenpunktde_matchday_results("data/" + html_file)
