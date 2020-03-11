@@ -3,23 +3,21 @@ from argparse import ArgumentParser
 
 
 def fussballdatenpunktde_matchday_results(site_html):
-    """Process fussballdaten html into statistics
-
-    Notes:
-        - fussballdaten.de
-        - view-source:https://www.fussballdaten.de/bundesliga/2020/12/
+    """Scrape html for matchday results using BeautifulSoup
 
     Args:
-        site_html (str): html page to parse
+        site_html(str): raw html of the website containing the matchday data
+
+    Returns:
+        dictionary containing team matchups and the corresponding score
+        e.g. {0: [('Team Name', 'Score'),('Team Name', 'Score')], ... }
     """
+
     with open(f"{site_html}") as fp:
         soup = BeautifulSoup(fp, "html.parser")
 
     # game_count: used as a key in the dictionary of matches
     game_count = 0
-
-    # game_dict looks like this:
-    # {0: [('Team Name', 'Score'),('Team Name', 'Score')], ... }
     game_dict = {}
 
     # Returns all 'a' tags within the html in a list. Equivalent to .find_all()
@@ -83,6 +81,7 @@ def fussballdatenpunktde_matchday_results(site_html):
 
 
 def umlaut(word_with_umlaut):
+<<<<<<< HEAD
     """Insert accented chars where applicable
 
     Args:
@@ -90,6 +89,14 @@ def umlaut(word_with_umlaut):
 
     Returns:
         processed word
+=======
+    """Replace encoded umlaut with actual umlaut
+
+    Args:
+        word_with_umlaut(str): a word containing an umlaut
+    Returns:
+        word with actual umlaut
+>>>>>>> d8c5c44... improved comments
     """
     if "\\xc3\\xb6" in word_with_umlaut:
         word_with_umlaut = word_with_umlaut.replace("\\xc3\\xb6", "ö")
