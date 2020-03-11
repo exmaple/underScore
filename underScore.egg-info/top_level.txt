@@ -1,0 +1,3 @@
+tests
+the_mines
+utils
