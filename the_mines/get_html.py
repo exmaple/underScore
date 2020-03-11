@@ -23,7 +23,7 @@ def get_matchday_html(matchday, season):
     page_source = requests.get(url)
     season = season.replace("/", "_")
     filename = "fussballdaten_" + season + "_" + matchday + ".html"
-    filepath = "data/" + filename
+    filepath = 'the_mines/data/' + filename
 
     # Check if file exists
     if not os.path.isfile(filepath):

@@ -3,8 +3,9 @@ from discord.ext import commands
 from random import choice, randrange
 
 from utils.messages import embedded_stats
+from utils.messages import embedded_matchday_results
 from utils.dummy_data import get_dummy_data
-from the_mines.get_data import test
+from the_mines.get_data import extract_matchday_results
 
 
 class Stats(commands.Cog):
@@ -42,19 +43,14 @@ class Stats(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-        @commands.command()
-        async def getMatchdayResults(self, ctx, matchday, season):
-            results = extract_matchday_results(matchday, season)
-            embed = embedded_stats(
-                # player_name,
-                # height=height,
-                # weight=weight,
-                # position=position,
-                # gp=gp,
-                # goals=goals,
-                # assists=assists,
-            )
-            await ctx.send(embed=embed)
+    @commands.command()
+    async def getMatchdayResults(self, ctx, matchday, season):
+        results = extract_matchday_results(matchday, season)
+        # results = extract_matchday_results('1', '2019/2020')
+
+        embed = embedded_matchday_results(matchday, results)
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

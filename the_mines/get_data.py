@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
-from get_html import get_matchday_html
-from scrape_html import fussballdatenpunktde_matchday_results
+from .get_html import get_matchday_html
+from .scrape_html import fussballdatenpunktde_matchday_results
 
 
 def extract_matchday_results(matchday, season):
