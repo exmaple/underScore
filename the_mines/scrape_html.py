@@ -81,22 +81,12 @@ def fussballdatenpunktde_matchday_results(site_html):
 
 
 def umlaut(word_with_umlaut):
-<<<<<<< HEAD
     """Insert accented chars where applicable
-
-    Args:
-        word_with_umlaut (str): word containing unprocessed accented char
-
-    Returns:
-        processed word
-=======
-    """Replace encoded umlaut with actual umlaut
 
     Args:
         word_with_umlaut(str): a word containing an umlaut
     Returns:
         word with actual umlaut
->>>>>>> d8c5c44... improved comments
     """
     if "\\xc3\\xb6" in word_with_umlaut:
         word_with_umlaut = word_with_umlaut.replace("\\xc3\\xb6", "ö")
