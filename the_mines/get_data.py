@@ -8,6 +8,8 @@ def extract_matchday_results(matchday, season):
 
     html_file = get_matchday_html(matchday, season)
 
-    matchday_results = fussballdatenpunktde_matchday_results("the_mines/data/" + html_file)
-
+    matchday_results = fussballdatenpunktde_matchday_results(
+        "the_mines/data/" + html_file
+    )
+    print(matchday_results)
     return matchday_results
