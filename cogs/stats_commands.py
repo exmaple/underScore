@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 from random import choice, randrange
 
-from utils.messages import embedded_stats
-from utils.messages import embedded_matchday_results
+from utils.messages import embedded_stats, embedded_matchday_results
 from utils.dummy_data import get_dummy_data
 from the_mines.get_data import extract_matchday_results
 
