@@ -45,7 +45,6 @@ class Stats(commands.Cog):
     @commands.command()
     async def getMatchdayResults(self, ctx, matchday, season):
         results = extract_matchday_results(matchday, season)
-        # results = extract_matchday_results('1', '2019/2020')
 
         embed = embedded_matchday_results(matchday, results)
 
