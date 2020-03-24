@@ -21,7 +21,16 @@ def embedded_stats(title, **stats):
 
 
 def embedded_matchday_results(matchday, matches):
-    """Build embedded message with matchday results"""
+    """Build embedded message with matchday results
+
+    Args:
+        matchday (string): a number representing the matchday (eg. '2')
+        matches (dict): dictionary containing team matchups and the corresponding score
+            e.g. {0: [('Team Name 1', 'Score'),('Team Name 2', 'Score')], ... }
+
+    Returns:
+        embed message object
+    """
     title = "Matchday " + matchday
     embed = discord.Embed(title=title, color=0xDC052D)
 
