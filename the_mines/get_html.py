@@ -23,14 +23,14 @@ def get_matchday_html(matchday, season):
     page_source = requests.get(url)
     season = season.replace("/", "_")
     filename = "fussballdaten_" + season + "_" + matchday + ".html"
-    filepath = "data/" + filename
+    filepath = 'the_mines/data/' + filename
 
     # Check if file exists
     if not os.path.isfile(filepath):
         with open(filename, "w") as f:
             print("creating file..." + filename)
             f.write(str(page_source.content))
-            shutil.move(filename, "data/" + filename)
+            shutil.move(filename, "the_mines/data/" + filename)
     else:
         print("opening file... " + filename)
         return filename

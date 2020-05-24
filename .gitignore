@@ -1,4 +1,5 @@
 venv
 __pycache__
 cogs/__pycache__
-the_mines/.DS_Store
+/the_mines/data/.DS_Store
+/underScore.egg-info/*
