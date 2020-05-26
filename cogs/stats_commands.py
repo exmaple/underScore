@@ -4,7 +4,7 @@ from random import choice, randrange
 
 from utils.messages import embedded_stats, embedded_matchday_results
 from utils.dummy_data import get_dummy_data
-from the_mines.get_data import extract_matchday_results
+from the_mines.process.fussballdaten.process_thml import extract_matchday_results
 
 
 class Stats(commands.Cog):

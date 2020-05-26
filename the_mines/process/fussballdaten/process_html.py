@@ -2,8 +2,15 @@ from bs4 import BeautifulSoup
 from argparse import ArgumentParser
 from tempfile import TemporaryFile
 
+from ..download.get_html import download_html
 
-def get_matchday_results(raw_html):
+
+def get_matchday_results(matchday, season):
+    raw_html = download_html(matchday, season)
+    return process_results(raw_html)
+
+
+def process_results(raw_html):
     """Scrape html for matchday results using BeautifulSoup
 
     Args:
