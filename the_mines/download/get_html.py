@@ -1,7 +1,4 @@
 import requests
-import shutil
-import os
-from tempfile import TemporaryFile
 
 
 def download_html(matchday, season):
