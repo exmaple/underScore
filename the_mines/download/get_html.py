@@ -21,6 +21,6 @@ def download_html(matchday, season):
         data = str(requests.get(url).content)
 
     except Exception:
-        print(f'Unable to download file using params: {matchday}, {season}')
+        print(f"Unable to download file using params: {matchday}, {season}")
 
     return data

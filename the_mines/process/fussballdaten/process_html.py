@@ -20,7 +20,7 @@ def process_results(raw_html):
         dictionary containing team matchups and the corresponding score
         e.g. {0: [('Team Name', 'Score'),('Team Name', 'Score')], ... }
     """
-    with TemporaryFile('w+') as tmp:
+    with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
