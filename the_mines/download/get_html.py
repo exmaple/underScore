@@ -18,7 +18,7 @@ def download_html(matchday, season):
     """
     try:
         url = "https://www.fussballdaten.de/bundesliga/" + season[5:9] + "/" + matchday
-        data = str(requests.get(url))
+        data = str(requests.get(url).content)
 
     except Exception:
         print(f'Unable to download file using params: {matchday}, {season}')
