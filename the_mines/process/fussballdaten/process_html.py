@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from argparse import ArgumentParser
 from tempfile import TemporaryFile
 
-from ..download.get_html import download_html
+from ...download.get_html import download_html
 
 
 def get_matchday_results(matchday, season):
