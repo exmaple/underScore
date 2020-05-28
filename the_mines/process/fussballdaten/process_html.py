@@ -22,6 +22,7 @@ def process_results(raw_html):
     """
     with TemporaryFile('w+') as tmp:
         tmp.write(raw_html)
+        tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
         # game_count: used as a key in the dictionary of matches
