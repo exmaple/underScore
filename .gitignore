@@ -1,5 +1,7 @@
 venv
 __pycache__
+.pytest_cache/
 cogs/__pycache__
+tests/__pycache__
 /the_mines/data/.DS_Store
 /underScore.egg-info/*
