@@ -20,13 +20,9 @@ def load_extensions(bot, extensions):
             print(f"{error}")
 
 
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--token", "-t", action="store", help="Token from the developer portal",
-    )
-    args = parser.parse_args()
-
+@click.command()
+@click.option('--token', default=None, help="Token from the developer portal")
+def main(token):
     bot = commands.Bot(command_prefix="!")
 
     @bot.event
@@ -38,9 +34,11 @@ if __name__ == "__main__":
     extensions = ["cogs.stats_commands"]
     load_extensions(bot, extensions)
 
-    if args.token:
-        run_token = args.token
-    else:
-        run_token = os.environ["TOKEN"]
+    if not token:
+        token = os.environ["TOKEN"]
 
-    bot.run(f"{run_token}")
+    bot.run(f"{token}")
+
+
+if __name__ == "__main__":
+    main()
