@@ -21,7 +21,7 @@ def load_extensions(bot, extensions):
 
 
 @click.command()
-@click.option('--token', default=None, help="Token from the developer portal")
+@click.option("--token", default=None, help="Token from the developer portal")
 def main(token):
     bot = commands.Bot(command_prefix="!")
 
