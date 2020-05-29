@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from argparse import ArgumentParser
 import os
 import click
 
