@@ -21,7 +21,7 @@ def download_html(matchday, season):
         data str containing downloaded html page content
     """
     try:
-        logger.debug('Downloading data file')
+        logger.debug("Downloading data file")
         url = "https://www.fussballdaten.de/bundesliga/" + season[5:9] + "/" + matchday
         data = str(requests.get(url).content)
 

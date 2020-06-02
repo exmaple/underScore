@@ -13,6 +13,7 @@ class Stats(commands.Cog):
     Attributes:
         bot (Bot): instance of the bot the cog will attach to
     """
+
     def __init__(self, bot):
         """Initialization method
 

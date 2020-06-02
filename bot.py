@@ -10,7 +10,9 @@ logger = logging.getLogger("app")
 
 
 def setup_logging(log_level):
-    formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s: %(message)s", "%Y-%m-%d %H:%M:%S"
+    )
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -34,11 +36,15 @@ def load_extensions(bot, extensions):
 
 @click.command()
 @click.option("--token", default=None, help="Token from the developer portal")
-@click.option("--log-level", default="INFO", type=click.Choice(['INFO', 'DEBUG', 'WARNING', 'ERROR'], case_sensitive=False))
+@click.option(
+    "--log-level",
+    default="INFO",
+    type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR"], case_sensitive=False),
+)
 def main(token, log_level):
     setup_logging(log_level)
 
-    logger.info('Setting up bot')
+    logger.info("Setting up bot")
     bot = commands.Bot(command_prefix="!")
 
     @bot.event
