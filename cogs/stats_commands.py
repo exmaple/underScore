@@ -13,7 +13,6 @@ class Stats(commands.Cog):
     Attributes:
         bot (Bot): instance of the bot the cog will attach to
     """
-
     def __init__(self, bot):
         """Initialization method
 
@@ -45,9 +44,7 @@ class Stats(commands.Cog):
     @commands.command()
     async def getMatchdayResults(self, ctx, matchday, season):
         results = get_matchday_results(matchday, season)
-
         embed = embedded_matchday_results(matchday, results)
-
         await ctx.send(embed=embed)
 
 
