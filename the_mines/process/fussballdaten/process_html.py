@@ -3,6 +3,35 @@ from argparse import ArgumentParser
 from tempfile import TemporaryFile
 
 from ...download.get_html import download_html
+from ...download.get_html import download_default_html
+
+def get_default_season():
+    raw_html = download_default_html()
+    with TemporaryFile("w+") as tmp:
+        tmp.write(raw_html)
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
+
+        title = soup.title.name
+
+        # The season is in the title (2019/2020)
+        # My plan is to find the index of the '/' within the title
+        # Then grab the preceding and following 4 characters
+        ind = title.index('/')
+        return title[ind-4:ind+5]
+
+def get_default_matchday():
+    raw_html = download_default_html()
+    with TemporaryFile("w+") as tmp:
+        tmp.write(raw_html)
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
+
+        title = soup.title.name
+
+        ind = title.index('.')
+        matchday = title[ind-2:ind]
+        return matchday.strip() # when the matchday is only 1 digit, strip leading whitespace
 
 
 def get_matchday_results(matchday, season):
