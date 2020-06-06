@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 from random import choice, randrange
 
-from utils.messages import embedded_stats, embedded_matchday_results
+from utils.messages import embedded_stats, embedded_matchday_results, embed_dict
 from utils.dummy_data import get_dummy_data
-from the_mines.process.fussballdaten.process_html import get_matchday_results
+from the_mines.process.fussballdaten.process_html import get_matchday_results, get_blurb
 
 
 class Stats(commands.Cog):
@@ -46,6 +46,12 @@ class Stats(commands.Cog):
     async def getMatchdayResults(self, ctx, matchday, season):
         results = get_matchday_results(matchday, season)
         embed = embedded_matchday_results(matchday, results)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def blurb(self, ctx, team, season):
+        team_name, blurb = get_blurb(team, season)
+        embed = embed_dict(team_name, blurb)
         await ctx.send(embed=embed)
 
 
