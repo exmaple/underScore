@@ -51,7 +51,7 @@ class Stats(commands.Cog):
     @commands.command()
     async def blurb(self, ctx, team, season):
         team_name, blurb = get_blurb(team, season)
-        embed = embed_dict(team_name, blurb)
+        embed = embed_dict(ctx.author.display_name, ctx.author.avatar_url, team_name, blurb)
         await ctx.send(embed=embed)
 
 
