@@ -7,14 +7,14 @@ from utils.table_handler import (
     find_team_in_table,
     extract_full_table_stats,
     tables_from_soup,
-    get_table
+    get_table,
 )
 
 
 logger = logging.getLogger("app")
 
 
-def get_blurb(team, season='2020'):
+def get_blurb(team, season="2020"):
     """Gets a selection of stats for a team
 
     Args:
@@ -35,9 +35,16 @@ def get_blurb(team, season='2020'):
         table = get_table(tables_from_soup(soup), full=True)
 
         # collect target statistics from target team
-        position, team_name, _, wins, ties, losses, _, points = extract_full_table_stats(
-            find_team_in_table(team, table)
-        )
+        (
+            position,
+            team_name,
+            _,
+            wins,
+            ties,
+            losses,
+            _,
+            points,
+        ) = extract_full_table_stats(find_team_in_table(team, table))
 
     logger.debug(f"Blurb stats colected for {team}")
 

@@ -82,9 +82,8 @@ def find_team_in_table(team, table):
             if team.lower() in umlaut(column).lower():
                 return row
 
-    logger.debug(f'Target team: {team}, not found')
+    logger.debug(f"Target team: {team}, not found")
     return None
-
 
 
 def extract_full_table_stats(row):
