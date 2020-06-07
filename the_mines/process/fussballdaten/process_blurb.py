@@ -3,17 +3,10 @@ from tempfile import TemporaryFile
 import logging
 from ...download.get_html import download_raw_html
 from utils.misc import umlaut
+from utils.table_handler import find_team_in_table, extract_table_stats, tables_from_soup
 
 
 logger = logging.getLogger("app")
-
-
-def find_team_in_table(team, table):
-    # should find a way to do this in a non n^2 manner
-    for row in table:
-        for column in row:
-            if team.lower() in umlaut(column).lower():
-                return row
 
 
 def get_blurb(team, season):
@@ -24,25 +17,17 @@ def get_blurb(team, season):
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        # get all tables
-        tables = [
-            [
-                [td.get_text(strip=True) for td in tr.find_all('td')]
-                for tr in table.find_all('tr')
-            ]
-            for table in soup.find_all('table')
-        ]
-
         # the league table is the first one we get from the html package
-        table_stats = find_team_in_table(team, tables[0])
+        tables = tables_from_soup(soup)
+        position, team_name, _, wins, ties, losses, _, points = extract_table_stats(find_team_in_table(team, tables[0]))
 
     logger.debug(f'Returning blurb stats for {team}')
 
     return {
-        "title": f"{umlaut(table_stats[2])}",
+        "title": f"{umlaut(team_name)}",
         "fields": {
-            "Pos": f"{table_stats[1]}",
-            "WTL": f"{table_stats[4]}-{table_stats[5]}-{table_stats[6]}",
-            "Pts": f"{table_stats[8]}",
+            "Pos": f"{position}",
+            "WTL": f"{wins}-{ties}-{losses}",
+            "Pts": f"{points}",
         },
     }
