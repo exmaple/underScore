@@ -45,7 +45,7 @@ class Stats(commands.Cog):
     @commands.command()
     async def getMatchdayResults(self, ctx, matchday=get_default_matchday('matchday'), season=get_default_matchday('season')):
         results = get_matchday_results(matchday, season)
-        embed = embedded_matchday_results(matchday, results)
+        embed = embedded_matchday_results(matchday, season, results)
         await ctx.send(embed=embed)
 
 

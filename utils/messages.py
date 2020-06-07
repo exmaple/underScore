@@ -20,7 +20,7 @@ def embedded_stats(title, **stats):
     return embed
 
 
-def embedded_matchday_results(matchday, matches):
+def embedded_matchday_results(matchday, season, matches):
     """Build embedded message with matchday results
 
     Args:
@@ -31,7 +31,7 @@ def embedded_matchday_results(matchday, matches):
     Returns:
         embed message object
     """
-    title = "Matchday " + matchday
+    title = 'Matchday ' + matchday + '  ' + season
     embed = discord.Embed(title=title, color=0xDC052D)
 
     for key, value in matches.items():
@@ -45,8 +45,8 @@ def embedded_matchday_results(matchday, matches):
             )
         else:
             embed.add_field(
-                name=value[0][0] + "-" + value[1][0],
-                value=value[0][1] + "-" + value[1][1],
+                name=value[0][0] + '-' + value[1][0],
+                value=value[0][1] + '-' + value[1][1],
                 inline=True,
             )
 
