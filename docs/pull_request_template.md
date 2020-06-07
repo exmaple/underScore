@@ -8,13 +8,13 @@ Resolves #(issue)
 ## Special Notes
 Include any items that the reviewer should pay special attention to.
 
-## Expected Version Bump
+## Suggested Version Bump
 - [ ] Major
 - [ ] Minor
 - [ ] Patch
-- [ ] None
 
 # Checklist:
 - [ ] I have run `black .`
 - [ ] I have made corresponding changes to the documentation
 - [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] I have added logging
