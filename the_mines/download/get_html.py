@@ -5,8 +5,10 @@ import logging
 logger = logging.getLogger("app")
 
 def download_default_html():
-    url = "https://www.fussballdaten.de/bundesliga/"
-    data = str(requests.get(url).content)
+    try:
+        logger.debug("Downloading data file")
+        url = "https://www.fussballdaten.de/bundesliga/"
+        data = str(requests.get(url).content)
 
     except Exception:
         logger.debug(f"Unable to download file")

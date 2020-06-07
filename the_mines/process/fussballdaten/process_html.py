@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 from argparse import ArgumentParser
 from tempfile import TemporaryFile
 
-from ...download.get_html import download_html
-from ...download.get_html import download_default_html
+from ...download.get_html import download_html, download_default_html
 
 def get_default_season():
     raw_html = download_default_html()
@@ -12,13 +11,13 @@ def get_default_season():
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        title = soup.title.name
+        title = soup.title.text
 
         # The season is in the title (2019/2020)
         # My plan is to find the index of the '/' within the title
         # Then grab the preceding and following 4 characters
         ind = title.index('/')
-        return title[ind-4:ind+5]
+    return title[ind-4:ind+5]
 
 def get_default_matchday():
     raw_html = download_default_html()
@@ -27,11 +26,11 @@ def get_default_matchday():
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        title = soup.title.name
+        title = soup.title.text
 
         ind = title.index('.')
         matchday = title[ind-2:ind]
-        return matchday.strip() # when the matchday is only 1 digit, strip leading whitespace
+    return matchday.strip() # when the matchday is only 1 digit, strip leading whitespace
 
 
 def get_matchday_results(matchday, season):
@@ -52,7 +51,7 @@ def process_results(raw_html):
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
-        soup = BeautifulSoup(tmp, "html.parser")
+        soup = BeautifulSoup(tmp, 'html.parser')
 
         # game_count: used as a key in the dictionary of matches
         game_count = 0
@@ -61,12 +60,12 @@ def process_results(raw_html):
         # Returns all 'a' tags within the html in a list. Equivalent to .find_all()
         a_tag = soup("a")
 
-        # Loop through every tag returned and determine whether it contains the
-        # data we require.
+        # Loop through every tag returned and determine
+        # whether it contains the data we require.
         for game_details in a_tag:
-            if "id" in game_details.attrs and "class" in game_details.attrs:
+            if 'id' in game_details.attrs and 'class' in game_details.attrs:
                 teams_list = []
-                teams_string = game_details.get("title")
+                teams_string = game_details.get('title')
                 teams_string_list = teams_string.split()
                 counter = 0
                 score1 = -1
@@ -79,38 +78,73 @@ def process_results(raw_html):
                     score2 = scores[2]
                     counter += 1
 
-                # When the data is found we need to do some extra string
-                # manipulating to ensure the correct team name is returned.
-                if teams_string_list[2] == "gegen" and len(teams_string_list) == 6:
-                    # 1/1
-                    team1 = umlaut(teams_string_list[1])
-                    team2 = umlaut(teams_string_list[3])
-                    teams_list.append((team1, score1))
-                    teams_list.append((team2, score2))
-                elif teams_string_list[3] == "gegen" and len(teams_string_list) == 7:
-                    # 2/1
-                    team1 = teams_string_list[1] + " " + teams_string_list[2]
-                    team2 = teams_string_list[4]
-                    team1 = umlaut(team1)
-                    team2 = umlaut(team2)
-                    teams_list.append((team1, score1))
-                    teams_list.append((team2, score2))
-                elif teams_string_list[2] == "gegen" and len(teams_string_list) == 7:
-                    # 1/2
-                    team1 = teams_string_list[1]
-                    team2 = teams_string_list[3] + " " + teams_string_list[4]
-                    team1 = umlaut(team1)
-                    team2 = umlaut(team2)
-                    teams_list.append((team1, score1))
-                    teams_list.append((team2, score2))
-                elif teams_string_list[3] == "gegen" and len(teams_string_list) == 8:
-                    # 2/2
-                    team1 = teams_string_list[1] + " " + teams_string_list[2]
-                    team2 = teams_string_list[4] + " " + teams_string_list[5]
-                    team1 = umlaut(team1)
-                    team2 = umlaut(team2)
-                    teams_list.append((team1, score1))
-                    teams_list.append((team2, score2))
+                """
+                When the data is found we need to do some extra string
+                manipulating to ensure the correct team name is returned.
+                """
+                if teams_string_list[0] == 'Spieldetails:':
+                    if teams_string_list[2] == 'gegen' and len(teams_string_list) == 6:
+                        # 1/1
+                        team1 = umlaut(teams_string_list[1])
+                        team2 = umlaut(teams_string_list[3])
+                        teams_list.append((team1, score1))
+                        teams_list.append((team2, score2))
+                    elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 7:
+                        # 2/1
+                        team1 = teams_string_list[1] + " " + teams_string_list[2]
+                        team2 = teams_string_list[4]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, score1))
+                        teams_list.append((team2, score2))
+                    elif teams_string_list[2] == 'gegen' and len(teams_string_list) == 7:
+                        # 1/2
+                        team1 = teams_string_list[1]
+                        team2 = teams_string_list[3] + " " + teams_string_list[4]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, score1))
+                        teams_list.append((team2, score2))
+                    elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 8:
+                        # 2/2
+                        team1 = teams_string_list[1] + ' ' + teams_string_list[2]
+                        team2 = teams_string_list[4] + ' ' + teams_string_list[5]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, score1))
+                        teams_list.append((team2, score2))
+
+                elif teams_string_list[0] == 'Vorschau':
+                    if teams_string_list[4] == 'gegen' and len(teams_string_list) == 8:
+                        # 1/1
+                        team1 = umlaut(teams_string_list[3])
+                        team2 = umlaut(teams_string_list[5])
+                        teams_list.append((team1, 'TBD'))
+                        teams_list.append((team2, 'TBD'))
+                    elif teams_string_list[5] == 'gegen' and len(teams_string_list) == 9:
+                        # 2/1
+                        team1 = teams_string_list[3] + " " + teams_string_list[4]
+                        team2 = teams_string_list[6]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, 'TBD'))
+                        teams_list.append((team2, 'TBD'))
+                    elif teams_string_list[4] == 'gegen' and len(teams_string_list) == 9:
+                        # 1/2
+                        team1 = teams_string_list[3]
+                        team2 = teams_string_list[5] + " " + teams_string_list[6]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, 'TBD'))
+                        teams_list.append((team2, 'TBD'))
+                    elif teams_string_list[5] == 'gegen' and len(teams_string_list) == 10:
+                        # 2/2
+                        team1 = teams_string_list[3] + ' ' + teams_string_list[4]
+                        team2 = teams_string_list[6] + ' ' + teams_string_list[7]
+                        team1 = umlaut(team1)
+                        team2 = umlaut(team2)
+                        teams_list.append((team1, 'TBD'))
+                        teams_list.append((team2, 'TBD'))
 
                 game_dict[game_count] = teams_list
                 game_count += 1
