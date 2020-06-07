@@ -5,8 +5,10 @@ from random import choice, randrange
 from utils.messages import embedded_stats, embedded_matchday_results
 from utils.embedder import dict_to_embed
 from utils.dummy_data import get_dummy_data
+from utils.misc import get_author_info
 from the_mines.process.fussballdaten.process_matchday import get_matchday_results
 from the_mines.process.fussballdaten.process_blurb import get_blurb
+
 
 class Stats(commands.Cog):
     """All statistcal commands are collected here
@@ -51,8 +53,9 @@ class Stats(commands.Cog):
 
     @commands.command()
     async def blurb(self, ctx, team, season):
-        team_name, blurb = get_blurb(team, season)
-        embed = dict_to_embed(ctx.author.display_name, ctx.author.avatar_url, team_name, blurb)
+        blurb = get_blurb(team, season)
+        blurb.update(get_author_info(ctx))
+        embed = dict_to_embed(blurb)
         await ctx.send(embed=embed)
 
 

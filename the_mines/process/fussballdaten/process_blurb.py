@@ -38,8 +38,11 @@ def get_blurb(team, season):
 
     logger.debug(f'Returning blurb stats for {team}')
 
-    return umlaut(table_stats[2]), {
-        "Position": f"{table_stats[1]}",
-        "W-T-L": f"{table_stats[4]}-{table_stats[5]}-{table_stats[6]}",
-        "Points": f"{table_stats[8]}",
+    return {
+        "title": f"{umlaut(table_stats[2])}",
+        "fields": {
+            "Pos": f"{table_stats[1]}",
+            "WTL": f"{table_stats[4]}-{table_stats[5]}-{table_stats[6]}",
+            "Pts": f"{table_stats[8]}",
+        },
     }
