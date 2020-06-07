@@ -20,7 +20,6 @@ def embedded_stats(title, **stats):
     return embed
 
 
-
 def embedded_matchday_results(matchday, matches):
     """Build embedded message with matchday results
 

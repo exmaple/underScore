@@ -7,10 +7,10 @@ logger = logging.getLogger("app")
 def tables_from_soup(soup):
     tables = [
         [
-            [td.get_text(strip=True) for td in tr.find_all('td')]
-            for tr in table.find_all('tr')
+            [td.get_text(strip=True) for td in tr.find_all("td")]
+            for tr in table.find_all("tr")
         ]
-        for table in soup.find_all('table')
+        for table in soup.find_all("table")
     ]
 
     return tables
