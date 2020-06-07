@@ -4,7 +4,7 @@ from tempfile import TemporaryFile
 
 from ...download.get_html import download_html, download_default_html
 
-def get_default_season():
+def get_default_matchday(matchday_or_season):
     raw_html = download_default_html()
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
@@ -13,24 +13,14 @@ def get_default_season():
 
         title = soup.title.text
 
-        # The season is in the title (2019/2020)
-        # My plan is to find the index of the '/' within the title
-        # Then grab the preceding and following 4 characters
-        ind = title.index('/')
-    return title[ind-4:ind+5]
+        if matchday_or_season == 'matchday':
+            ind = title.index('.')
+            matchday = title[ind-2:ind]
+        elif matchday_or_season == 'season':
+            ind = title.index('/')
+            matchday = title[ind-4:ind+5]
 
-def get_default_matchday():
-    raw_html = download_default_html()
-    with TemporaryFile("w+") as tmp:
-        tmp.write(raw_html)
-        tmp.seek(0)
-        soup = BeautifulSoup(tmp, "html.parser")
-
-        title = soup.title.text
-
-        ind = title.index('.')
-        matchday = title[ind-2:ind]
-    return matchday.strip() # when the matchday is only 1 digit, strip leading whitespace
+    return matchday.strip()
 
 
 def get_matchday_results(matchday, season):

@@ -4,7 +4,7 @@ from random import choice, randrange
 
 from utils.messages import embedded_stats, embedded_matchday_results
 from utils.dummy_data import get_dummy_data
-from the_mines.process.fussballdaten.process_html import get_matchday_results, get_default_season, get_default_matchday
+from the_mines.process.fussballdaten.process_html import get_matchday_results, get_default_matchday
 
 
 class Stats(commands.Cog):
@@ -43,7 +43,7 @@ class Stats(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def getMatchdayResults(self, ctx, matchday=get_default_matchday(), season=get_default_season()):
+    async def getMatchdayResults(self, ctx, matchday=get_default_matchday('matchday'), season=get_default_matchday('season')):
         results = get_matchday_results(matchday, season)
         embed = embedded_matchday_results(matchday, results)
         await ctx.send(embed=embed)
