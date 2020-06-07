@@ -14,16 +14,3 @@ jobs:
       uses: anothrNick/github-tag-action@1.22.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-  latest:
-    needs: bump
-    runs-on: ubuntu-latest
-
-    steps: 
-    - uses: actions/checkout@master
-    - name: Tag Latest Release
-      uses: EndBug/latest-tag@latest
-      with:
-        tag-name: latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
