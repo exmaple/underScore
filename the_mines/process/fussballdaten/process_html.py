@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from argparse import ArgumentParser
 from tempfile import TemporaryFile
@@ -12,7 +13,6 @@ def get_default_matchday(matchday_or_season):
         soup = BeautifulSoup(tmp, "html.parser")
 
         title = soup.title.text
-
         if matchday_or_season == 'matchday':
             ind = title.index('.')
             matchday = title[ind-2:ind]
@@ -42,104 +42,50 @@ def process_results(raw_html):
         tmp.write(raw_html)
         tmp.seek(0)
         soup = BeautifulSoup(tmp, 'html.parser')
+        matches = {}
 
-        # game_count: used as a key in the dictionary of matches
-        game_count = 0
-        game_dict = {}
+        ''' Example team_list
+        ['Freiburg', "M'gladbach", 'RB Leipzig', 'Paderborn', 'Leverkusen', 'Bayern', 'Frankfurt', 'Mainz', 'Düsseldorf', 'Hoffenheim', 'Dortmund', 'Hertha BSC', 'Bremen', 'Wolfsburg', 'Union Berlin', 'Schalke', 'Augsburg', 'Köln']
+        '''
+        all_teams = soup.find_all('a', attrs={'title': re.compile('Details zu*')})
+        team_list = []
+        for team in all_teams:
+            team = team.get_text()
+            team = re.sub('\(.*\)', '', team)
+            team = umlaut(team)
+            team_list.append(team)
 
-        # Returns all 'a' tags within the html in a list. Equivalent to .find_all()
-        a_tag = soup("a")
+        ''' Example full_matchup_list
+        [['Freiburg', "M'gladbach"], ['RB Leipzig', 'Paderborn'], ['Leverkusen', 'Bayern'], ['Frankfurt', 'Mainz'], ['Düsseldorf', 'Hoffenheim'], ['Dortmund', 'Hertha BSC'], ['Bremen', 'Wolfsburg'], ['Union Berlin', 'Schalke']]
+        '''
+        matchup_list = []
+        full_matchup_list = []
+        for i in range(len(team_list)):
+            matchup_list.append(team_list.pop(0))
+            if (len(team_list) % 2 == 0):
+                full_matchup_list.append(matchup_list)
+                matchup_list = []
 
-        # Loop through every tag returned and determine
-        # whether it contains the data we require.
-        for game_details in a_tag:
-            if 'id' in game_details.attrs and 'class' in game_details.attrs:
-                teams_list = []
-                teams_string = game_details.get('title')
-                teams_string_list = teams_string.split()
-                counter = 0
-                score1 = -1
-                score2 = -1
-                for scores in game_details:
-                    if counter == 1:
-                        break
-                    scores = str(scores.text)
-                    score1 = scores[0]
-                    score2 = scores[2]
-                    counter += 1
+        ''' Example score_list
+        [['1', '0'], ['1', '1'], ['2', '4'], ['0', '2'], ['2', '2'], ['1', '0'], ['0', '1'], ['1', '1'], ['1', '1']]
+        '''
+        score_tag = soup.find_all('span', attrs={'id': re.compile('\d\d\d\d\d')})
+        score_list = [score.get_text().split(':') for score in score_tag]
+        if len(score_list) == 0:
+            score_list = [['tbd', 'tbd'] for x in full_matchup_list]
 
-                """
-                When the data is found we need to do some extra string
-                manipulating to ensure the correct team name is returned.
-                """
-                if teams_string_list[0] == 'Spieldetails:':
-                    if teams_string_list[2] == 'gegen' and len(teams_string_list) == 6:
-                        # 1/1
-                        team1 = umlaut(teams_string_list[1])
-                        team2 = umlaut(teams_string_list[3])
-                        teams_list.append((team1, score1))
-                        teams_list.append((team2, score2))
-                    elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 7:
-                        # 2/1
-                        team1 = teams_string_list[1] + " " + teams_string_list[2]
-                        team2 = teams_string_list[4]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, score1))
-                        teams_list.append((team2, score2))
-                    elif teams_string_list[2] == 'gegen' and len(teams_string_list) == 7:
-                        # 1/2
-                        team1 = teams_string_list[1]
-                        team2 = teams_string_list[3] + " " + teams_string_list[4]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, score1))
-                        teams_list.append((team2, score2))
-                    elif teams_string_list[3] == 'gegen' and len(teams_string_list) == 8:
-                        # 2/2
-                        team1 = teams_string_list[1] + ' ' + teams_string_list[2]
-                        team2 = teams_string_list[4] + ' ' + teams_string_list[5]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, score1))
-                        teams_list.append((team2, score2))
+        ''' Example matches dictionary
+        {0: [('Freiburg', '1'), ("M'gladbach", '0')], 1: [('RB Leipzig', '1'), ('Paderborn', '1')], 2: [('Leverkusen', '2'), ('Bayern', '4')], 3: [('Frankfurt', '0'), ('Mainz', '2')], 4: [('Düsseldorf', '2'), ('Hoffenheim', '2')], 5: [('Dortmund', '1'), ('Hertha BSC', '0')], 6: [('Bremen', '0'), ('Wolfsburg', '1')], 7: [('Union Berlin', '1'), ('Schalke', '1')], 8: [('Augsburg', '1'), ('Köln', '1')]}
+        '''
 
-                elif teams_string_list[0] == 'Vorschau':
-                    if teams_string_list[4] == 'gegen' and len(teams_string_list) == 8:
-                        # 1/1
-                        team1 = umlaut(teams_string_list[3])
-                        team2 = umlaut(teams_string_list[5])
-                        teams_list.append((team1, 'TBD'))
-                        teams_list.append((team2, 'TBD'))
-                    elif teams_string_list[5] == 'gegen' and len(teams_string_list) == 9:
-                        # 2/1
-                        team1 = teams_string_list[3] + " " + teams_string_list[4]
-                        team2 = teams_string_list[6]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, 'TBD'))
-                        teams_list.append((team2, 'TBD'))
-                    elif teams_string_list[4] == 'gegen' and len(teams_string_list) == 9:
-                        # 1/2
-                        team1 = teams_string_list[3]
-                        team2 = teams_string_list[5] + " " + teams_string_list[6]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, 'TBD'))
-                        teams_list.append((team2, 'TBD'))
-                    elif teams_string_list[5] == 'gegen' and len(teams_string_list) == 10:
-                        # 2/2
-                        team1 = teams_string_list[3] + ' ' + teams_string_list[4]
-                        team2 = teams_string_list[6] + ' ' + teams_string_list[7]
-                        team1 = umlaut(team1)
-                        team2 = umlaut(team2)
-                        teams_list.append((team1, 'TBD'))
-                        teams_list.append((team2, 'TBD'))
+        i = 0
+        for i in range(len(score_list)):
+            x = [(full_matchup_list[i][0], score_list[i][0]),(full_matchup_list[i][1], score_list[i][1])]
+            print(x)
+            matches[i] = x
 
-                game_dict[game_count] = teams_list
-                game_count += 1
-
-    return game_dict
+    print(matches)
+    return matches
 
 
 def umlaut(word_with_umlaut):
