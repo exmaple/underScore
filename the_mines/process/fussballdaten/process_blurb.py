@@ -9,9 +9,26 @@ from utils.table_handler import (
     tables_from_soup,
     get_table,
 )
+import re
 
 
 logger = logging.getLogger("app")
+
+
+def get_glance_schedule(team, season="2020"):
+    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
+    with TemporaryFile("w+") as tmp:
+        tmp.write(download_raw_html(url))
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
+        matches = soup.find_all('div', attrs={'id': re.compile('myTab_tabellen-tab')})
+        for match in matches:
+            info, = match.find_all('div', attrs={'class': 'spiel-holder'})
+
+            team1, team2 = info.find_all('a', attrs={'title': re.compile('Profil')})
+            print(team1.get_text())
+            print(team2.get_text())
+
 
 
 def get_blurb(team, season="2020"):
@@ -43,8 +60,11 @@ def get_blurb(team, season="2020"):
             ties,
             losses,
             _,
+            _,
             points,
         ) = extract_full_table_stats(find_team_in_table(team, table))
+
+        schedule = get_glance_schedule(team)
 
     logger.debug(f"Blurb stats colected for {team}")
 
