@@ -16,18 +16,22 @@ logger = logging.getLogger("app")
 
 
 def get_glance_schedule(team, season="2020"):
-    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
+    # url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
+    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
-        matches = soup.find_all('div', attrs={'id': re.compile('myTab_tabellen-tab')})
-        for match in matches:
-            info, = match.find_all('div', attrs={'class': 'spiel-holder'})
 
-            team1, team2 = info.find_all('a', attrs={'title': re.compile('Profil')})
-            print(team1.get_text())
-            print(team2.get_text())
+        # get curr as well
+        matches = soup.find_all('a', attrs={'class': re.compile('ergebnis')})
+        prev, curr = matches[-2:]
+        print(prev.attrs['title'])
+        final, half_time = prev.find_all('span')
+        print(final.get_text())
+
+
+
 
 
 
