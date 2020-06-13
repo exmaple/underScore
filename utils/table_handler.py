@@ -96,5 +96,5 @@ def extract_full_table_stats(row):
         all known stats in row
     """
     logger.debug("Extracting full table stats")
-    _, position, team_name, games_played, wins, ties, losses, goal_diff, points = row
-    return position, team_name, games_played, wins, ties, losses, goal_diff, points
+    _, position, team_name, games_played, wins, ties, losses, goals_for_against, goal_diff, points = row
+    return position, team_name, games_played, wins, ties, losses, goals_for_against, goal_diff, points
