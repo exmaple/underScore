@@ -45,8 +45,9 @@ class Stats(commands.Cog):
     @commands.command()
     async def matchday(self, ctx, matchday=get_default_matchday('matchday'), season=get_default_matchday('season')):
         results = get_matchday_results(matchday, season)
-        embed = embedded_matchday_results(matchday, season, results)
-        await ctx.send(embed=embed)
+        for key in results:
+            embed = embedded_matchday_results(matchday, season, results, key)
+            await ctx.send(embed=embed)
 
 
 def setup(bot):

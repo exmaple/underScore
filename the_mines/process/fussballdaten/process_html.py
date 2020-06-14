@@ -1,7 +1,9 @@
 import re
 from bs4 import BeautifulSoup
+from datetime import date
 from argparse import ArgumentParser
 from tempfile import TemporaryFile
+from utils.misc import umlaut
 
 from ...download.get_html import download_html, download_default_html
 
@@ -36,68 +38,116 @@ def process_results(raw_html):
 
     Returns:
         dictionary containing team matchups and the corresponding score
-        e.g. {0: [('Team Name', 'Score'),('Team Name', 'Score')], ... }
+        e.g. {'14.06.2020': [[('Mainz', 'tbd'), ('Augsburg', 'tbd')], [('Schalke', 'tbd'), ('Leverkusen', 'tbd')]], '12.06.2020': [[('Hoffenheim', '0'), ('RB Leipzig', '2')]], '13.06.2020': [[('Wolfsburg', '2'), ('Freiburg', '2')], [('Düsseldorf', '0'), ('Dortmund', '1')], [('Hertha BSC', '1'), ('Frankfurt', '4')], [('Köln', '1'), ('Union Berlin', '2')], [('Paderborn', '1'), ('Bremen', '5')], [('Bayern', '2'), ("M'gladbach", '1')]]}
     """
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
         soup = BeautifulSoup(tmp, 'html.parser')
-        matches = {}
 
-        ''' Example team_list
-        ['Freiburg', "M'gladbach", 'RB Leipzig', 'Paderborn', 'Leverkusen', 'Bayern', 'Frankfurt', 'Mainz', 'Düsseldorf', 'Hoffenheim', 'Dortmund', 'Hertha BSC', 'Bremen', 'Wolfsburg', 'Union Berlin', 'Schalke', 'Augsburg', 'Köln']
-        '''
-        all_teams = soup.find_all('a', attrs={'title': re.compile('Details zu*')})
-        team_list = []
-        for team in all_teams:
-            team = team.get_text()
-            team = re.sub('\(.*\)', '', team)
-            team = umlaut(team)
-            team_list.append(team)
+        dates = soup.find_all('div', attrs={'class': 'datum-row'})
+        matches = soup.find_all('div', attrs={'class': 'spiele-row detils'})
 
-        ''' Example full_matchup_list
-        [['Freiburg', "M'gladbach"], ['RB Leipzig', 'Paderborn'], ['Leverkusen', 'Bayern'], ['Frankfurt', 'Mainz'], ['Düsseldorf', 'Hoffenheim'], ['Dortmund', 'Hertha BSC'], ['Bremen', 'Wolfsburg'], ['Union Berlin', 'Schalke']]
-        '''
-        matchup_list = []
-        full_matchup_list = []
-        for i in range(len(team_list)):
-            matchup_list.append(team_list.pop(0))
-            if (len(team_list) % 2 == 0):
-                full_matchup_list.append(matchup_list)
-                matchup_list = []
+        matchdays = {}
+        matchup = []
 
-        ''' Example score_list
-        [['1', '0'], ['1', '1'], ['2', '4'], ['0', '2'], ['2', '2'], ['1', '0'], ['0', '1'], ['1', '1'], ['1', '1']]
-        '''
+        date_re = re.compile('\d+.\d+.\d+')
+
         score_tag = soup.find_all('span', attrs={'id': re.compile('\d\d\d\d\d')})
         score_list = [score.get_text().split(':') for score in score_tag]
-        if len(score_list) == 0:
-            score_list = [['tbd', 'tbd'] for x in full_matchup_list]
 
-        ''' Example matches dictionary
-        {0: [('Freiburg', '1'), ("M'gladbach", '0')], 1: [('RB Leipzig', '1'), ('Paderborn', '1')], 2: [('Leverkusen', '2'), ('Bayern', '4')], 3: [('Frankfurt', '0'), ('Mainz', '2')], 4: [('Düsseldorf', '2'), ('Hoffenheim', '2')], 5: [('Dortmund', '1'), ('Hertha BSC', '0')], 6: [('Bremen', '0'), ('Wolfsburg', '1')], 7: [('Union Berlin', '1'), ('Schalke', '1')], 8: [('Augsburg', '1'), ('Köln', '1')]}
+        ''' Create dictionary keys
+            Each key is a unique date on which matches occur
         '''
+        for day in dates:
+            matchdate = date_re.findall(day.get_text())[0]
+            matchdays[matchdate] = []
 
-        i = 0
-        for i in range(len(score_list)):
-            x = [(full_matchup_list[i][0], score_list[i][0]),(full_matchup_list[i][1], score_list[i][1])]
-            print(x)
-            matches[i] = x
+        ''' Add matches to dictionary according to date match was played
+        '''
+        for match in matches:
+            match_details = []
+            matchup_score = []
+            matchdate = '' # dd.mm.yyyy
+            # if match has been played
+            try:
+                match_details = match.find_all('a', attrs={'title': re.compile('Spieldetails:*')})
+                matchdate = date_re.findall(match_details[0]['title'])
+                matchdate = matchdate[0]
+                match = re.sub('\(\d+.\)', '', match.get_text())
+                match = umlaut(match)
 
-    print(matches)
-    return matches
+                team_re = re.compile('([\D]+)')
+                matchup = team_re.findall(match)
+
+                while ':' in matchup:
+                    matchup.remove(':')
+
+                # add matchup to dict with score
+                for team in matchup:
+                    if len(score_list[0]) == 0: del score_list[0]
+                    matchup_score.append((team, score_list[0].pop(0)))
+
+                matchdays[matchdate].append(matchup_score)
+
+            except IndexError:
+                pass
 
 
-def umlaut(word_with_umlaut):
-    """Insert accented chars where applicable
+            # if the match has not yet been played
+            if len(match_details) == 0:
+                try:
+                    match_details = match.find_all('a', attrs={'title': re.compile('Vorschau:*')})
+                    team_re = re.compile('\)([^|]*)\(')
+                    no_digits = re.compile('\D+')
 
-    Args:
-        word_with_umlaut(str): a word containing an umlaut
-    Returns:
-        word with actual umlaut
-    """
-    if "\\xc3\\xb6" in word_with_umlaut:
-        word_with_umlaut = word_with_umlaut.replace("\\xc3\\xb6", "ö")
-    elif "\\xc3\\xbc" in word_with_umlaut:
-        word_with_umlaut = word_with_umlaut.replace("\\xc3\\xbc", "ü")
-    return word_with_umlaut
+                    matchdate = date_re.findall(match_details[0]['title'])
+                    matchdate = matchdate[0]
+
+                    match = umlaut(match.get_text())
+                    # (16.)Düsseldorf15:30Dortmund(2.)- w -17,50X5,2521,36
+
+                    match = team_re.findall(match)
+                    # ['Düsseldorf15:30Dortmund']
+
+                    match = no_digits.findall(match[0])
+                    # ['Düsseldorf', ':', 'Dortmund']
+
+                    while ':' in match:
+                        match.remove(':')
+                    # ['Düsseldorf', 'Dortmund']
+
+                    matchup = match
+
+                    # add matchup to dict without score
+                    for team in matchup:
+                        matchup_score.append((team, 'tbd'))
+
+                    matchdays[matchdate].append(matchup_score)
+
+                except IndexError:
+                    pass
+
+
+            # if the match is live
+            if len(match_details) == 0:
+
+                matchdate = date.today()
+                matchdate = matchdate.strftime("%d.%m.%Y")
+
+                # match = re.sub('\(\d+.\)', '', match.get_text())
+                match = umlaut(match.get_text())
+
+                team_re = re.compile('\)([^|]*)\(')
+                match = team_re.findall(match)
+
+                match = no_digits.findall(match[0])
+                while ':' in match:
+                    match.remove(':')
+                matchup = match
+                for team in matchup:
+                    matchup_score.append((team, 'LIVE'))
+
+                matchdays[matchdate].append(matchup_score)
+    # print(matchdays)
+    return matchdays

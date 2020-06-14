@@ -20,7 +20,7 @@ def embedded_stats(title, **stats):
     return embed
 
 
-def embedded_matchday_results(matchday, season, matches):
+def embedded_matchday_results(matchday, season, matchdays, matchdate):
     """Build embedded message with matchday results
 
     Args:
@@ -31,23 +31,35 @@ def embedded_matchday_results(matchday, season, matches):
     Returns:
         embed message object
     """
-    title = 'Matchday ' + matchday + '  ' + season
-    embed = discord.Embed(title=title, color=0xDC052D)
 
-    for key, value in matches.items():
-        # where value is a list of of 2 tuples
-        # each tuple contains: ('team_name', 'score')
-        if value[0][1] == 'TBD':
-            embed.add_field(
-                name=value[0][0] + "-" + value[1][0],
-                value='TBD',
-                inline=True,
+    title = 'Matchday ' + matchday + '  ' + season
+    embed = discord.Embed(title=title, description=matchdate, color=0xDC052D)
+    for match in matchdays[matchdate]:
+        embed.add_field(
+                name=match[0][0] + ' - ' + match[1][0],
+                value=match[0][1] + ' - ' + match[1][1],
+                inline=False,
             )
-        else:
-            embed.add_field(
-                name=value[0][0] + '-' + value[1][0],
-                value=value[0][1] + '-' + value[1][1],
-                inline=True,
-            )
+
+    # for key, value in matches.items():
+    #     embed = discord.Embed(title=title, description=key, color=0xDC052D)
+    #     embed.add_field(
+    #         name=value[0][0][0] + ' - ' + value[0][1][0],
+    #         value=value[0][0][1] + ' - ' + value[0][1][1],
+    #         inline=True,
+    #     )
+
+        # if value[0][1] == 'TBD':
+        #     embed.add_field(
+        #         name=value[0][0] + "-" + value[1][0],
+        #         value='TBD',
+        #         inline=True,
+        #     )
+        # else:
+        #     embed.add_field(
+        #         name=value[0][0] + '-' + value[1][0],
+        #         value=value[0][1] + '-' + value[1][1],
+        #         inline=True,
+        #     )
 
     return embed
