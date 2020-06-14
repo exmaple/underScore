@@ -111,7 +111,7 @@ def get_blurb(team, season="2020"):
         "title": f"{umlaut(team_name)}",
         "fields": {
             "Pos": f"{position}",
-            "WTL": f"{wins}-{ties}-{losses}",
+            "W-T-L": f"{wins}-{ties}-{losses}",
             "Pts": f"{points}",
         },
     }
