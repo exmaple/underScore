@@ -17,21 +17,31 @@ logger = logging.getLogger("app")
 
 def build_score(title, score):
     _, team1, _, team2, _, comp = title.split(" ")
+    team1 = umlaut(team1)
+    team2 = umlaut(team2)
     # remove trailing bracket
     comp = comp[:-1]
     return f"{team1} {score} {team2}", comp
 
 
+def build_matchup(title):
+    # Vorschau & Statistiken: Bremen gegen Bayern (16.06.2020, Bundesliga)
+    _, _, _, team1, _, team2, _, comp = title.split(" ")
+    team1 = umlaut(team1)
+    team2 = umlaut(team2)
+    # remove trailing bracket
+    comp = comp[:-1]
+
+    return f"{team1} vs. {team2}", comp
+
 
 def get_glance_schedule(team, season="2020"):
-    # url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
     url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        # get curr as well
         matches = soup.find_all('a', attrs={'class': re.compile('ergebnis')})
         prev, curr = matches[-2:]
         final_p, half_time_p = prev.find_all('span')
@@ -40,12 +50,24 @@ def get_glance_schedule(team, season="2020"):
         prev_result, comp_p = build_score(prev.attrs['title'], final_p.get_text())
         curr_result, comp_c = build_score(curr.attrs['title'], final_c.get_text())
 
-        results = {
-            f"Previous Match ({comp_p})": f"{prev_result}",
-            f"Current Match ({comp_c})": f"{curr_result}",
-        }
+    # get next section
+    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
+    with TemporaryFile("w+") as tmp:
+        tmp.write(download_raw_html(url))
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
 
-        return results
+        upcoming, = soup.find_all('div', attrs={'class': 'naechste-spiele'})
+        next, _, _, _ = upcoming.find_all('a')
+        matchup, comp_n = build_matchup(next.attrs['title'])
+
+    results = {
+        f"Previous Match ({comp_p})": f"{prev_result}",
+        f"Current Match ({comp_c})": f"{curr_result}",
+        f"Upcoming Match ({comp_n})": f"{matchup}",
+    }
+
+    return results
 
 
 def get_blurb(team, season="2020"):
