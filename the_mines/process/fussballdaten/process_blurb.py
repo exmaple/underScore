@@ -16,23 +16,24 @@ logger = logging.getLogger("app")
 
 
 def build_score(title, score):
-    _, team1, _, team2, _, comp = title.split(" ")
+    _, team1, _, team2, date, comp = title.split(" ")
     team1 = umlaut(team1)
     team2 = umlaut(team2)
     # remove trailing bracket
     comp = comp[:-1]
-    return f"{team1} {score} {team2}", comp
+    date = date[1:-1]
+    return f"{team1} {score} {team2}", date, comp
 
 
 def build_matchup(title):
     # Vorschau & Statistiken: Bremen gegen Bayern (16.06.2020, Bundesliga)
-    _, _, _, team1, _, team2, _, comp = title.split(" ")
+    _, _, _, team1, _, team2, date, comp = title.split(" ")
     team1 = umlaut(team1)
     team2 = umlaut(team2)
     # remove trailing bracket
     comp = comp[:-1]
-
-    return f"{team1} vs. {team2}", comp
+    date = date[1:-1]
+    return f"{team1} vs. {team2}", date, comp
 
 
 def get_glance_schedule(team, season="2020"):
@@ -47,8 +48,8 @@ def get_glance_schedule(team, season="2020"):
         final_p, half_time_p = prev.find_all('span')
         final_c, half_time_c = curr.find_all('span')
 
-        prev_result, comp_p = build_score(prev.attrs['title'], final_p.get_text())
-        curr_result, comp_c = build_score(curr.attrs['title'], final_c.get_text())
+        prev_result, date_p, comp_p = build_score(prev.attrs['title'], final_p.get_text())
+        curr_result, date_c, comp_c = build_score(curr.attrs['title'], final_c.get_text())
 
     # get next section
     url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
@@ -59,12 +60,12 @@ def get_glance_schedule(team, season="2020"):
 
         upcoming, = soup.find_all('div', attrs={'class': 'naechste-spiele'})
         next, _, _, _ = upcoming.find_all('a')
-        matchup, comp_n = build_matchup(next.attrs['title'])
+        matchup, date_n, comp_n = build_matchup(next.attrs['title'])
 
     results = {
-        f"Previous Match ({comp_p})": f"{prev_result}",
-        f"Current Match ({comp_c})": f"{curr_result}",
-        f"Upcoming Match ({comp_n})": f"{matchup}",
+        f"{date_p} ({comp_p})": f"{prev_result}",
+        f"{date_c} ({comp_c})": f"{curr_result}",
+        f"{date_n} ({comp_n})": f"{matchup}",
     }
 
     return results
