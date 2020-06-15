@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from tempfile import TemporaryFile
 from the_mines.download.get_html import download_default_html
 
+
 def umlaut(word_with_umlaut):
     """Insert accented chars where applicable
 
@@ -18,6 +19,7 @@ def umlaut(word_with_umlaut):
         word_with_umlaut = word_with_umlaut.replace("\\", "")
     return word_with_umlaut
 
+
 def get_default_matchday(matchday_or_season):
     raw_html = download_default_html()
     with TemporaryFile("w+") as tmp:
@@ -26,11 +28,11 @@ def get_default_matchday(matchday_or_season):
         soup = BeautifulSoup(tmp, "html.parser")
 
         title = soup.title.text
-        if matchday_or_season == 'matchday':
-            ind = title.index('.')
-            matchday = title[ind-2:ind]
-        elif matchday_or_season == 'season':
-            ind = title.index('/')
-            matchday = title[ind-4:ind+5]
+        if matchday_or_season == "matchday":
+            ind = title.index(".")
+            matchday = title[ind - 2 : ind]
+        elif matchday_or_season == "season":
+            ind = title.index("/")
+            matchday = title[ind - 4 : ind + 5]
 
     return matchday.strip()

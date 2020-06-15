@@ -9,11 +9,13 @@ from ...download.get_html import download_raw_html
 
 logger = logging.getLogger("app")
 
+
 def process_results(matchday, season):
     """Scrape html for matchday results using BeautifulSoup
 
     Args:
-        site_html(str): raw html of the website containing the matchday data
+        matchday(str): number representing the match day e.g. '13'
+        season(str): number representing the season e.g. '2019/2020'
 
     Returns:
         dictionary containing team matchups and the corresponding score
@@ -26,49 +28,52 @@ def process_results(matchday, season):
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
-        soup = BeautifulSoup(tmp, 'html.parser')
+        soup = BeautifulSoup(tmp, "html.parser")
 
-        dates = soup.find_all('div', attrs={'class': 'datum-row'})
-        matches = soup.find_all('div', attrs={'class': 'spiele-row detils'})
+        dates = soup.find_all("div", attrs={"class": "datum-row"})
+        matches = soup.find_all("div", attrs={"class": "spiele-row detils"})
 
         matchdays = {}
         matchup = []
 
-        date_re = re.compile('\d+.\d+.\d+')
+        date_re = re.compile("\d+.\d+.\d+")
 
-        score_tag = soup.find_all('span', attrs={'id': re.compile('\d\d\d\d\d')})
-        score_list = [score.get_text().split(':') for score in score_tag]
+        score_tag = soup.find_all("span", attrs={"id": re.compile("\d\d\d\d\d")})
+        score_list = [score.get_text().split(":") for score in score_tag]
 
-        ''' Create dictionary keys
+        """ Create dictionary keys
             Each key is a unique date on which matches occur
-        '''
+        """
         for day in dates:
             matchdate = date_re.findall(day.get_text())[0]
             matchdays[matchdate] = []
 
-        ''' Add matches to dictionary according to date match was played
-        '''
+        """ Add matches to dictionary according to date match was played
+        """
         for match in matches:
             match_details = []
             matchup_score = []
-            matchdate = '' # dd.mm.yyyy
+            matchdate = ""  # dd.mm.yyyy
             # if match has been played
             try:
-                match_details = match.find_all('a', attrs={'title': re.compile('Spieldetails:*')})
-                matchdate = date_re.findall(match_details[0]['title'])
+                match_details = match.find_all(
+                    "a", attrs={"title": re.compile("Spieldetails:*")}
+                )
+                matchdate = date_re.findall(match_details[0]["title"])
                 matchdate = matchdate[0]
-                match = re.sub('\(\d+.\)', '', match.get_text())
+                match = re.sub("\(\d+.\)", "", match.get_text())
                 match = umlaut(match)
 
-                team_re = re.compile('([\D]+)')
+                team_re = re.compile("([\D]+)")
                 matchup = team_re.findall(match)
 
-                while ':' in matchup:
-                    matchup.remove(':')
+                while ":" in matchup:
+                    matchup.remove(":")
 
                 # add matchup to dict with score
                 for team in matchup:
-                    if len(score_list[0]) == 0: del score_list[0]
+                    if len(score_list[0]) == 0:
+                        del score_list[0]
                     matchup_score.append((team, score_list[0].pop(0)))
 
                 matchdays[matchdate].append(matchup_score)
@@ -76,15 +81,16 @@ def process_results(matchday, season):
             except IndexError:
                 pass
 
-
             # if the match has not yet been played
             if len(match_details) == 0:
                 try:
-                    match_details = match.find_all('a', attrs={'title': re.compile('Vorschau:*')})
-                    team_re = re.compile('\)([^|]*)\(')
-                    no_digits = re.compile('\D+')
+                    match_details = match.find_all(
+                        "a", attrs={"title": re.compile("Vorschau:*")}
+                    )
+                    team_re = re.compile("\)([^|]*)\(")
+                    no_digits = re.compile("\D+")
 
-                    matchdate = date_re.findall(match_details[0]['title'])
+                    matchdate = date_re.findall(match_details[0]["title"])
                     matchdate = matchdate[0]
 
                     match = umlaut(match.get_text())
@@ -96,21 +102,20 @@ def process_results(matchday, season):
                     match = no_digits.findall(match[0])
                     # ['Düsseldorf', ':', 'Dortmund']
 
-                    while ':' in match:
-                        match.remove(':')
+                    while ":" in match:
+                        match.remove(":")
                     # ['Düsseldorf', 'Dortmund']
 
                     matchup = match
 
                     # add matchup to dict without score
                     for team in matchup:
-                        matchup_score.append((team, 'tbd'))
+                        matchup_score.append((team, "tbd"))
 
                     matchdays[matchdate].append(matchup_score)
 
                 except IndexError:
                     pass
-
 
             # if the match is live
             if len(match_details) == 0:
@@ -121,15 +126,15 @@ def process_results(matchday, season):
                 # match = re.sub('\(\d+.\)', '', match.get_text())
                 match = umlaut(match.get_text())
 
-                team_re = re.compile('\)([^|]*)\(')
+                team_re = re.compile("\)([^|]*)\(")
                 match = team_re.findall(match)
 
                 match = no_digits.findall(match[0])
-                while ':' in match:
-                    match.remove(':')
+                while ":" in match:
+                    match.remove(":")
                 matchup = match
                 for team in matchup:
-                    matchup_score.append((team, 'LIVE'))
+                    matchup_score.append((team, "LIVE"))
 
                 matchdays[matchdate].append(matchup_score)
     # print(matchdays)

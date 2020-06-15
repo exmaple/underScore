@@ -33,6 +33,7 @@ def download_default_html():
 
     return data
 
+
 def download_html(matchday, season):
     """Download fussballdaten html file
 
