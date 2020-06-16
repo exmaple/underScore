@@ -1,3 +1,6 @@
+import datetime
+
+
 def umlaut(word):
     """Insert accented chars where applicable
 
@@ -19,3 +22,10 @@ def get_author_info(ctx):
         "name": ctx.author.display_name,
         "icon_url": ctx.author.avatar_url,
     }
+
+
+def format_date(date):
+    day, month, year = date.split(".")
+    game_date = datetime.date(int(year), int(month), int(day))
+    month_name = game_date.strftime("%B")
+    return f"{month_name} {day}, {year}"

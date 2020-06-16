@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from tempfile import TemporaryFile
 import logging
 from ...download.get_html import download_raw_html
-from utils.misc import umlaut
+from utils.misc import umlaut, format_date
 from utils.table_handler import (
     find_team_in_table,
     extract_full_table_stats,
@@ -21,7 +21,7 @@ def build_score(title, score):
     team2 = umlaut(team2)
     # remove trailing bracket
     comp = comp[:-1]
-    date = date[1:-1]
+    date = format_date(date[1:-1])
     return f"{team1} {score} {team2}", date, comp
 
 
@@ -32,7 +32,7 @@ def build_matchup(title):
     team2 = umlaut(team2)
     # remove trailing bracket
     comp = comp[:-1]
-    date = date[1:-1]
+    date = format_date(date[1:-1])
     return f"{team1} vs. {team2}", date, comp
 
 
@@ -59,7 +59,7 @@ def get_glance_schedule(team, season="2020"):
         soup = BeautifulSoup(tmp, "html.parser")
 
         upcoming, = soup.find_all('div', attrs={'class': 'naechste-spiele'})
-        next, _, _, _ = upcoming.find_all('a')
+        next, _, _ = upcoming.find_all('a')
         matchup, date_n, comp_n = build_matchup(next.attrs['title'])
 
     results = {
