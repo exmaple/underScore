@@ -36,8 +36,33 @@ def build_matchup(title):
     return f"{team1} vs. {team2}", date, comp
 
 
+def get_team_str(target):
+    target = target.lower()
+    return {
+        "bayern": "fc-bayern-muenchen",
+        "dortmund": "borussia-dortmund",
+        "leipzig": "rb-leipzig",
+        "leverkusen": "bayer-leverkusen",
+        "m'gladbach": "borussia-moenchengladbach",
+        "wolfsburg": "vfl-wolfsburg",
+        "hoffenheim": "1899-hoffenheim",
+        "freiburg": "sc-freiburg",
+        "schalke": "fc-schalke-04",
+        "frankfurt": "eintracht-frankfurt",
+        "hertha": "hertha-bsc",
+        "koln": "1-fc-koeln",
+        "augsburg": "fc-augsburg",
+        "berlin": "1-fc-union-berlin",
+        "mainz": "1-fsv-mainz-05",
+        "dusseldorf": "fortuna-duesseldorf",
+        "bremen": "sv-werder-bremen",
+        "paderborn": "sc-paderborn-07",
+    }[target]
+
+
 def get_glance_schedule(team, season="2020"):
-    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/spielplan/"
+    team = get_team_str(team)
+    url = f"https://www.fussballdaten.de/vereine/{team}/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
         tmp.seek(0)
@@ -52,7 +77,7 @@ def get_glance_schedule(team, season="2020"):
         curr_result, date_c, comp_c = build_score(curr.attrs['title'], final_c.get_text())
 
     # get next section
-    url = f"https://www.fussballdaten.de/vereine/fc-bayern-muenchen/{season}/"
+    url = f"https://www.fussballdaten.de/vereine/{team}/{season}/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
         tmp.seek(0)
