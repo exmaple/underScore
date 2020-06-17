@@ -17,6 +17,6 @@ def download_raw_html(url):
         data = str(requests.get(url).content)
 
     except Exception:
-        logger.debug(f"Unable to download file using params: {matchday}, {season}")
+        logger.debug(f"Unable to download file using param: {url}")
 
     return data
