@@ -25,7 +25,7 @@ def build_matchup(title, score=None):
     comp = match.group(4)
 
     if not score:
-        score = 'vs'
+        score = "vs"
 
     return {f"{date} ({comp})": f"{team1} {score} {team2}"}
 
@@ -65,14 +65,14 @@ def get_glance_schedule(team, season="2020"):
         soup = BeautifulSoup(tmp, "html.parser")
 
         # List of matches
-        matches = soup.find_all('a', attrs={'class': re.compile('ergebnis')})
+        matches = soup.find_all("a", attrs={"class": re.compile("ergebnis")})
 
         # We are interested in the 2 most recent results
         prev, curr = matches[-2:]
 
         # Get scores
-        prev_score, _ = prev.find_all('span')
-        curr_score, _ = curr.find_all('span')
+        prev_score, _ = prev.find_all("span")
+        curr_score, _ = curr.find_all("span")
 
     # Get next match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/"
@@ -81,16 +81,16 @@ def get_glance_schedule(team, season="2020"):
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        upcoming, = soup.find_all('div', attrs={'class': 'naechste-spiele'})
+        (upcoming,) = soup.find_all("div", attrs={"class": "naechste-spiele"})
 
         # The list of upcoming matches depends on how many matches are left
         # in the season.  We can't reliably list decompose so we'll have to pop
-        next = upcoming.find_all('a').pop(0)
+        next = upcoming.find_all("a").pop(0)
 
     results = {}
-    results.update(build_matchup(prev.attrs['title'], prev_score.get_text()))
-    results.update(build_matchup(curr.attrs['title'], curr_score.get_text()))
-    results.update(build_matchup(next.attrs['title']))
+    results.update(build_matchup(prev.attrs["title"], prev_score.get_text()))
+    results.update(build_matchup(curr.attrs["title"], curr_score.get_text()))
+    results.update(build_matchup(next.attrs["title"]))
 
     return results
 
@@ -141,5 +141,5 @@ def get_blurb(team, season="2020"):
         },
     }
 
-    results['fields'].update(schedule)
+    results["fields"].update(schedule)
     return results
