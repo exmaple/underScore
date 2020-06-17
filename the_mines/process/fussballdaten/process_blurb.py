@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from tempfile import TemporaryFile
 import logging
 from ...download.get_html import download_raw_html
-from utils.misc import umlaut, format_date
+from utils.misc import umlaut, format_date, get_default_season
 from utils.table_handler import (
     find_team_in_table,
     extract_full_table_stats,
@@ -15,25 +15,19 @@ import re
 logger = logging.getLogger("app")
 
 
-def build_score(title, score):
-    _, team1, _, team2, date, comp = title.split(" ")
-    team1 = umlaut(team1)
-    team2 = umlaut(team2)
-    # remove trailing bracket
-    comp = comp[:-1]
-    date = format_date(date[1:-1])
-    return f"{team1} {score} {team2}", date, comp
+def build_matchup(title, score=None):
+    # Pull in items we are interested in from title str
+    match = re.search(".*: (.*) gegen (.*) \((.*), (.*)\)", title, re.IGNORECASE)
 
+    team1 = umlaut(match.group(1))
+    team2 = umlaut(match.group(2))
+    date = format_date(match.group(3))
+    comp = match.group(4)
 
-def build_matchup(title):
-    # Vorschau & Statistiken: Bremen gegen Bayern (16.06.2020, Bundesliga)
-    _, _, _, team1, _, team2, date, comp = title.split(" ")
-    team1 = umlaut(team1)
-    team2 = umlaut(team2)
-    # remove trailing bracket
-    comp = comp[:-1]
-    date = format_date(date[1:-1])
-    return f"{team1} vs. {team2}", date, comp
+    if not score:
+        score = 'vs'
+
+    return {f"{date} ({comp})": f"{team1} {score} {team2}"}
 
 
 def get_team_str(target):
@@ -62,21 +56,25 @@ def get_team_str(target):
 
 def get_glance_schedule(team, season="2020"):
     team = get_team_str(team)
+
+    # Get previous and current match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
+        # List of matches
         matches = soup.find_all('a', attrs={'class': re.compile('ergebnis')})
+
+        # We are interested in the 2 most recent results
         prev, curr = matches[-2:]
-        final_p, half_time_p = prev.find_all('span')
-        final_c, half_time_c = curr.find_all('span')
 
-        prev_result, date_p, comp_p = build_score(prev.attrs['title'], final_p.get_text())
-        curr_result, date_c, comp_c = build_score(curr.attrs['title'], final_c.get_text())
+        # Get scores
+        prev_score, _ = prev.find_all('span')
+        curr_score, _ = curr.find_all('span')
 
-    # get next section
+    # Get next match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/"
     with TemporaryFile("w+") as tmp:
         tmp.write(download_raw_html(url))
@@ -84,14 +82,15 @@ def get_glance_schedule(team, season="2020"):
         soup = BeautifulSoup(tmp, "html.parser")
 
         upcoming, = soup.find_all('div', attrs={'class': 'naechste-spiele'})
-        next, _, _ = upcoming.find_all('a')
-        matchup, date_n, comp_n = build_matchup(next.attrs['title'])
 
-    results = {
-        f"{date_p} ({comp_p})": f"{prev_result}",
-        f"{date_c} ({comp_c})": f"{curr_result}",
-        f"{date_n} ({comp_n})": f"{matchup}",
-    }
+        # The list of upcoming matches depends on how many matches are left
+        # in the season.  We can't reliably list decompose so we'll have to pop
+        next = upcoming.find_all('a').pop(0)
+
+    results = {}
+    results.update(build_matchup(prev.attrs['title'], prev_score.get_text()))
+    results.update(build_matchup(curr.attrs['title'], curr_score.get_text()))
+    results.update(build_matchup(next.attrs['title']))
 
     return results
 

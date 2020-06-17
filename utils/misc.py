@@ -1,4 +1,5 @@
 import datetime
+from the_mines.download.get_html import download_raw_html
 
 
 def umlaut(word):
@@ -29,3 +30,21 @@ def format_date(date):
     game_date = datetime.date(int(year), int(month), int(day))
     month_name = game_date.strftime("%B")
     return f"{month_name} {day}, {year}"
+
+
+def get_default_season():
+    """Returns the current or most recent season
+    Returns:
+        season as string (eg. '2019/2020')
+    """
+    raw_html = download_raw_html("https://www.fussballdaten.de/bundesliga/")
+    with TemporaryFile("w+") as tmp:
+        tmp.write(raw_html)
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
+
+        title = soup.title.text
+        ind = title.index("/")
+        season = title[ind - 4 : ind + 5]
+
+    return season.strip()
