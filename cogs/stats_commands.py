@@ -46,10 +46,7 @@ class Stats(commands.Cog):
 
     @commands.command()
     async def matchday(
-        self,
-        ctx,
-        matchday=get_default_matchday(),
-        season=get_default_season(),
+        self, ctx, matchday=get_default_matchday(), season=get_default_season()
     ):
         results = process_results(matchday, season)
         for key in results:

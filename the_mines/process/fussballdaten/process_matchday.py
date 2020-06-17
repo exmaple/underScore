@@ -9,6 +9,7 @@ from ...download.get_html import download_raw_html
 
 logger = logging.getLogger("app")
 
+
 def live_match(match, matchup_score, matchdays):
     matchdate = date.today()
     matchdate = matchdate.strftime("%d.%m.%Y")
@@ -16,7 +17,7 @@ def live_match(match, matchup_score, matchdays):
     match = umlaut(match.get_text())
 
     team_re = re.compile("\)([^|]*)\(")
-    match, = team_re.findall(match)
+    (match,) = team_re.findall(match)
     no_digits = re.compile("\D+")
     match = no_digits.findall(match)
     while ":" in match:
@@ -30,7 +31,7 @@ def live_match(match, matchup_score, matchdays):
 
 def future_match(match, match_details, matchup_score, matchdays, matchdate, date_re):
     try:
-        match_details, = match.find_all(
+        (match_details,) = match.find_all(
             "a", attrs={"title": re.compile("Vorschau:*")}
         )
     except ValueError:
@@ -39,13 +40,13 @@ def future_match(match, match_details, matchup_score, matchdays, matchdate, date
     team_re = re.compile("\)([^|]*)\(")
     no_digits = re.compile("\D+")
 
-    matchdate, = date_re.findall(match_details["title"])
+    (matchdate,) = date_re.findall(match_details["title"])
     # matchdate = matchdate[0]
 
     match = umlaut(match.get_text())
     # (16.)Düsseldorf15:30Dortmund(2.)- w -17,50X5,2521,36
 
-    matchup, = team_re.findall(match)
+    (matchup,) = team_re.findall(match)
     # ['Düsseldorf15:30Dortmund']
 
     matchup = no_digits.findall(matchup)
@@ -55,7 +56,6 @@ def future_match(match, match_details, matchup_score, matchdays, matchdate, date
         matchup.remove(":")
     # ['Düsseldorf', 'Dortmund']
 
-
     # add matchup to dict without score
     for team in matchup:
         matchup_score.append((team, "tbd"))
@@ -63,17 +63,19 @@ def future_match(match, match_details, matchup_score, matchdays, matchdate, date
     matchdays[matchdate].append(matchup_score)
     return True
 
-def past_match(match, match_details, matchup_score, matchdays, score_list, matchdate, date_re):
+
+def past_match(
+    match, match_details, matchup_score, matchdays, score_list, matchdate, date_re
+):
 
     try:
-        match_details, = match.find_all(
+        (match_details,) = match.find_all(
             "a", attrs={"title": re.compile("Spieldetails:*")}
         )
     except ValueError:
         return False
 
-
-    matchdate, = date_re.findall(match_details["title"])
+    (matchdate,) = date_re.findall(match_details["title"])
     # matchdate = matchdate[0]
     match = re.sub("\(\d+.\)", "", match.get_text())
     match = umlaut(match)
@@ -92,6 +94,7 @@ def past_match(match, match_details, matchup_score, matchdays, score_list, match
 
     matchdays[matchdate].append(matchup_score)
     return True
+
 
 def create_initial_dict(dates, date_re):
     """ Create dictionary keys
@@ -113,6 +116,7 @@ def create_initial_dict(dates, date_re):
 
     return matchdays
 
+
 def get_initial_data(soup):
     """Retrieve initial soup
 
@@ -131,6 +135,7 @@ def get_initial_data(soup):
     score_list = [score.get_text().split(":") for score in score_tag]
 
     return dates, matches, score_list
+
 
 def process_results(matchday, season):
     """Scrape html for matchday results using BeautifulSoup
@@ -165,16 +170,24 @@ def process_results(matchday, season):
             matchdate = ""  # dd.mm.yyyy
 
             # if match has been played
-            played = past_match(match, match_details, matchup_score, matchdays, score_list, matchdate, date_re)
+            played = past_match(
+                match,
+                match_details,
+                matchup_score,
+                matchdays,
+                score_list,
+                matchdate,
+                date_re,
+            )
 
             # if the match has not yet been played
             if played == False:
-                played = future_match(match, match_details, matchup_score, matchdays, matchdate, date_re)
+                played = future_match(
+                    match, match_details, matchup_score, matchdays, matchdate, date_re
+                )
 
             # if the match is live
             if played == False:
                 live_match(match, matchup_score, matchdays)
-
-
 
     return matchdays

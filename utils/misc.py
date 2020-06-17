@@ -17,7 +17,9 @@ def umlaut(word_with_umlaut):
         word_with_umlaut = word_with_umlaut.replace("\\xc3\\xbc", "ü")
     if "\\" in word_with_umlaut:
         word_with_umlaut = word_with_umlaut.replace("\\", "")
+
     return word_with_umlaut
+
 
 def open_default_html():
     """Get homepage html containing data for current matchday
@@ -25,13 +27,14 @@ def open_default_html():
     Returns:
         content of title tag as string
     """
-    raw_html = download_raw_html('https://www.fussballdaten.de/bundesliga/')
+    raw_html = download_raw_html("https://www.fussballdaten.de/bundesliga/")
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
 
-        return = soup.title.text
+        return soup.title.text
+
 
 def get_default_matchday():
     """Returns the current or most recent matchday
@@ -41,11 +44,11 @@ def get_default_matchday():
     """
     title = open_default_html()
 
-    # _, _, _, _, _, _, _, _, _, _, season, _, _  = title.split(' ')
     ind = title.index(".")
     matchday = title[ind - 2 : ind]
 
     return matchday.strip()
+
 
 def get_default_season():
     """Returns the current or most recent season
@@ -54,8 +57,6 @@ def get_default_season():
         season as string (eg. '2019/2020')
     """
     title = open_default_html()
-
-    # _, _, _, _, _, _, _, season, _, _, _, _, _  = title.split(' ')
 
     ind = title.index("/")
     season = title[ind - 4 : ind + 5]

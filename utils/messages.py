@@ -32,14 +32,13 @@ def embedded_matchday_results(matchday, season, matchdays, matchdate):
         embed message object
     """
 
-    title = 'Matchday ' + matchday + '  ' + season
+    title = "Matchday " + matchday + "  " + season
     embed = discord.Embed(title=title, description=matchdate, color=0xDC052D)
     for match in matchdays[matchdate]:
         embed.add_field(
             name=match[0][0] + " - " + match[1][0],
-            value=match[0][1] + ':' + match[1][1],
+            value=match[0][1] + ":" + match[1][1],
             inline=False,
         )
-
 
     return embed
