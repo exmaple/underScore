@@ -16,6 +16,15 @@ logger = logging.getLogger("app")
 
 
 def build_matchup(title, score=None):
+    """Build display string given a title
+
+    Args:
+        title (str): title information from html page
+        score (str): match result
+
+    Returns:
+        dict containing formatted field title and score string
+    """
     # Pull in items we are interested in from title str
     match = re.search(".*: (.*) gegen (.*) \((.*), (.*)\)", title, re.IGNORECASE)
 
@@ -31,6 +40,17 @@ def build_matchup(title, score=None):
 
 
 def get_team_str(target):
+    """Given a team get the string needed to use url
+
+    This is NOT the way we would like to be doing this.  That being said it
+    seems like for now it is the only way to collect these particular strings.
+
+    Args:
+        target (str): desired team
+
+    Returns:
+        string used by url for specific team
+    """
     target = target.lower()
     return {
         "bayern": "fc-bayern-muenchen",
@@ -54,9 +74,9 @@ def get_team_str(target):
     }[target]
 
 
-def get_glance_schedule(team, season="2020"):
+def get_glance_schedule(team, season=get_default_season()):
     team = get_team_str(team)
-
+    
     # Get previous and current match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:

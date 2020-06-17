@@ -1,5 +1,7 @@
 import datetime
 from the_mines.download.get_html import download_raw_html
+from tempfile import TemporaryFile
+from bs4 import BeautifulSoup
 
 
 def umlaut(word):
@@ -19,6 +21,14 @@ def umlaut(word):
 
 
 def get_author_info(ctx):
+    """Collect command caller info
+
+    Args:
+        ctx (Context): calling context
+
+    Returns:
+        dict with name and avatar
+    """
     return {
         "name": ctx.author.display_name,
         "icon_url": ctx.author.avatar_url,
@@ -26,6 +36,14 @@ def get_author_info(ctx):
 
 
 def format_date(date):
+    """Given a date string from fussballdaten format nicely
+
+    Args:
+        date (str): date string
+
+    Returns:
+        formatted date string
+    """
     day, month, year = date.split(".")
     game_date = datetime.date(int(year), int(month), int(day))
     month_name = game_date.strftime("%B")
@@ -34,6 +52,7 @@ def format_date(date):
 
 def get_default_season():
     """Returns the current or most recent season
+
     Returns:
         season as string (eg. '2019/2020')
     """
@@ -45,6 +64,6 @@ def get_default_season():
 
         title = soup.title.text
         ind = title.index("/")
-        season = title[ind - 4 : ind + 5]
-
-    return season.strip()
+        opening, closing = title[ind - 4 : ind + 5].strip().split('/')
+        
+    return closing
