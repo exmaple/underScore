@@ -76,7 +76,7 @@ def get_team_str(target):
 
 def get_glance_schedule(team, season=get_default_season()):
     team = get_team_str(team)
-    
+
     # Get previous and current match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/spielplan/"
     with TemporaryFile("w+") as tmp:
@@ -115,20 +115,20 @@ def get_glance_schedule(team, season=get_default_season()):
     return results
 
 
-def get_blurb(team, season="2020"):
-    """Gets a selection of stats for a team
+def get_glance_table_stats(team, season=get_default_season()):
+    """Get table statistics for blurb
 
     Args:
-        team (str): name of team
+        team (str): target team
         season (str): target season
 
-    Returns:
-        dictionary containing team as title and selection of statistical fields
+    Results:
+        dict containing table stats
     """
-    base = f"https://www.fussballdaten.de/bundesliga/tabelle/{season}"
-    logger.debug(f"Hitting {base}")
+    url = f"https://www.fussballdaten.de/bundesliga/tabelle/{season}"
+    logger.debug(f"Hitting {url}")
     with TemporaryFile("w+") as tmp:
-        tmp.write(download_raw_html(base))
+        tmp.write(download_raw_html(url))
         tmp.seek(0)
 
         # parse html output for tables
@@ -148,18 +148,29 @@ def get_blurb(team, season="2020"):
             points,
         ) = extract_full_table_stats(find_team_in_table(team, table))
 
-        schedule = get_glance_schedule(team)
+        return {
+            "title": f"{umlaut(team_name)}",
+            "fields": {
+                "Pos": f"{position}",
+                "W-T-L": f"{wins}-{ties}-{losses}",
+                "Pts": f"{points}",
+            },
+        }
+
+
+def get_blurb(team):
+    """Gets a selection of stats for a team
+
+    Args:
+        team (str): name of team
+        season (str): target season
+
+    Returns:
+        dictionary containing team as title and selection of statistical fields
+    """
+    results = {}
+    results.update(get_glance_table_stats(team))
+    results["fields"].update(get_glance_schedule(team))
 
     logger.debug(f"Blurb stats colected for {team}")
-
-    results = {
-        "title": f"{umlaut(team_name)}",
-        "fields": {
-            "Pos": f"{position}",
-            "W-T-L": f"{wins}-{ties}-{losses}",
-            "Pts": f"{points}",
-        },
-    }
-
-    results["fields"].update(schedule)
     return results
