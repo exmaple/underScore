@@ -2,6 +2,7 @@ import datetime
 from the_mines.download.get_html import download_raw_html
 from tempfile import TemporaryFile
 from bs4 import BeautifulSoup
+from unidecode import unidecode
 
 
 def umlaut(word):
@@ -18,6 +19,26 @@ def umlaut(word):
         return word.replace("\\xc3\\xbc", "ü")
     else:
         return word
+
+
+def unumlaut(word):
+    """Insert letter where accented chars are meant to be
+
+    This is the opposite of the `umlaut` function.  Rather than adding the
+    accent, we are placing the non-accented letter.
+
+    Args:
+        word (str): a word containing an umlaut
+    Returns:
+        word with regular letter
+    """
+    if "\\xc3\\xb6" in word:
+        return word.replace("\\xc3\\xb6", "o")
+    elif "\\xc3\\xbc" in word:
+        return word.replace("\\xc3\\xbc", "u")
+    else:
+        # This tool will replace any accented chars with non-accented chars
+        return unidecode(word)
 
 
 def get_author_info(ctx):
@@ -65,5 +86,5 @@ def get_default_season():
         title = soup.title.text
         ind = title.index("/")
         opening, closing = title[ind - 4 : ind + 5].strip().split('/')
-        
+
     return closing

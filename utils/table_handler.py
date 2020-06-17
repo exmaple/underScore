@@ -1,5 +1,5 @@
 import logging
-from .misc import umlaut
+from .misc import unumlaut
 
 logger = logging.getLogger("app")
 
@@ -79,7 +79,7 @@ def find_team_in_table(team, table):
     # should find a way to do this in a non n^2 manner
     for row in table:
         for column in row:
-            if team.lower() in umlaut(column).lower():
+            if team.lower() in unumlaut(column).lower():
                 return row
 
     logger.debug(f"Target team: {team}, not found")

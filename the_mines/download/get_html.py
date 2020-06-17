@@ -15,10 +15,9 @@ def download_raw_html(url):
         raw html string output
     """
     try:
-        logger.debug("Downloading data file")
         data = str(requests.get(url).content)
 
     except Exception:
-        logger.debug(f"Unable to download file using params: {matchday}, {season}")
+        logger.debug(f"Unable to download file using param: {url}")
 
     return data

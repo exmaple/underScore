@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from tempfile import TemporaryFile
 import logging
 from ...download.get_html import download_raw_html
-from utils.misc import umlaut, format_date, get_default_season
+from utils.misc import umlaut, unumlaut, format_date, get_default_season
 from utils.table_handler import (
     find_team_in_table,
     extract_full_table_stats,
@@ -168,6 +168,7 @@ def get_blurb(team):
     Returns:
         dictionary containing team as title and selection of statistical fields
     """
+    team = unumlaut(team)
     results = {}
     results.update(get_glance_table_stats(team))
     results["fields"].update(get_glance_schedule(team))
