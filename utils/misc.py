@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from tempfile import TemporaryFile
-from the_mines.download.get_html import download_default_html
+from the_mines.download.get_html import download_raw_html
 
 
 def umlaut(word_with_umlaut):
@@ -25,7 +25,7 @@ def open_default_html():
     Returns:
         content of title tag as string
     """
-    raw_html = download_default_html()
+    raw_html = download_raw_html('https://www.fussballdaten.de/bundesliga/')
     with TemporaryFile("w+") as tmp:
         tmp.write(raw_html)
         tmp.seek(0)
@@ -40,6 +40,8 @@ def get_default_matchday():
         matchday as string (eg. '3')
     """
     title = open_default_html()
+
+    # _, _, _, _, _, _, _, _, _, _, season, _, _  = title.split(' ')
     ind = title.index(".")
     matchday = title[ind - 2 : ind]
 
@@ -52,6 +54,9 @@ def get_default_season():
         season as string (eg. '2019/2020')
     """
     title = open_default_html()
+
+    # _, _, _, _, _, _, _, season, _, _, _, _, _  = title.split(' ')
+
     ind = title.index("/")
     season = title[ind - 4 : ind + 5]
 

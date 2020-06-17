@@ -22,18 +22,6 @@ def download_raw_html(url):
     return data
 
 
-def download_default_html():
-    try:
-        logger.debug("Downloading data file")
-        url = "https://www.fussballdaten.de/bundesliga/"
-        data = str(requests.get(url).content)
-
-    except Exception:
-        logger.debug(f"Unable to download file")
-
-    return data
-
-
 def download_html(matchday, season):
     """Download fussballdaten html file
 
