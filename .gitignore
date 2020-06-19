@@ -5,3 +5,7 @@ cogs/__pycache__
 tests/__pycache__
 /the_mines/data/.DS_Store
 /underScore.egg-info/*
+/the_mines/process/fussballdaten/Untitled.html
+/the_mines/process/fussballdaten/matchday30.html
+/the_mines/process/fussballdaten/test.html
+/the_mines/process/fussballdaten/test.py
