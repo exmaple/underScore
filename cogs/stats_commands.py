@@ -38,7 +38,7 @@ class Stats(commands.Cog):
             player_name (str): name of the player
         """
         await ctx.message.delete()
-        
+
         height, weight, position, gp, goals, assists = get_dummy_data()
         embed = embedded_stats(
             player_name,
