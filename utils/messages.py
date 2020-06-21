@@ -2,7 +2,7 @@ import discord
 
 
 def embedded_stats(title, **stats):
-    """Build embedded message with player statistics
+    """Build embedded message with generic statistics
 
     Args:
         title (str): title of the embedded message

@@ -7,6 +7,7 @@ from tempfile import TemporaryFile
 from utils.misc import umlaut
 from ...download.get_html import download_raw_html
 
+
 logger = logging.getLogger("app")
 
 
@@ -157,7 +158,6 @@ def process_results(matchday, season):
         tmp.write(raw_html)
         tmp.seek(0)
         soup = BeautifulSoup(tmp, "html.parser")
-
         dates, matches, score_list = get_initial_data(soup)
         matchdays = create_initial_dict(dates, date_re)
 

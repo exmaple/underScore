@@ -38,7 +38,7 @@ def load_extensions(bot, extensions):
 @click.option("--token", default=None, help="Token from the developer portal")
 @click.option(
     "--log-level",
-    default="INFO",
+    default="DEBUG",
     type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR"], case_sensitive=False),
 )
 def main(token, log_level):
