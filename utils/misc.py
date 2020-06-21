@@ -36,6 +36,8 @@ def unumlaut(word):
         return word.replace("\\xc3\\xb6", "o")
     elif "\\xc3\\xbc" in word:
         return word.replace("\\xc3\\xbc", "u")
+    elif "\\" in word:
+        return word.replace("\\", "")
     else:
         # This tool will replace any accented chars with non-accented chars
         return unidecode(word)
@@ -69,6 +71,35 @@ def format_date(date):
     game_date = datetime.date(int(year), int(month), int(day))
     month_name = game_date.strftime("%B")
     return f"{month_name} {day}, {year}"
+
+
+def open_default_html():
+    """Get homepage html containing data for current matchday
+
+    Returns:
+        content of title tag as string
+    """
+    raw_html = download_raw_html("https://www.fussballdaten.de/bundesliga/")
+    with TemporaryFile("w+") as tmp:
+        tmp.write(raw_html)
+        tmp.seek(0)
+        soup = BeautifulSoup(tmp, "html.parser")
+
+        return soup.title.text
+
+
+def get_default_matchday():
+    """Returns the current or most recent matchday
+
+    Returns:
+        matchday as string (eg. '3')
+    """
+    title = open_default_html()
+
+    ind = title.index(".")
+    matchday = title[ind - 2 : ind]
+
+    return matchday.strip()
 
 
 def get_default_season():
