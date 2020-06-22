@@ -116,6 +116,6 @@ def get_default_season():
 
         title = soup.title.text
         ind = title.index("/")
-        opening, closing = title[ind - 4 : ind + 5].strip().split('/')
+        opening, closing = title[ind - 4 : ind + 5].strip().split("/")
 
     return closing
