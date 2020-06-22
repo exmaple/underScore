@@ -37,7 +37,8 @@ class Stats(commands.Cog):
             ctx (Context): command usage context
             player_name (str): name of the player
         """
-        await ctx.message.delete()
+        if logger.level == getattr(logging, "INFO"):
+            await ctx.message.delete()
 
         height, weight, position, gp, goals, assists = get_dummy_data()
         embed = embedded_stats(
@@ -55,7 +56,8 @@ class Stats(commands.Cog):
     async def matchday(
         self, ctx, matchday=get_default_matchday(), season=get_default_season()
     ):
-        await ctx.message.delete()
+        if logger.level == getattr(logging, "INFO"):
+            await ctx.message.delete()
 
         results = process_results(matchday, season)
         for key in results:
@@ -70,7 +72,8 @@ class Stats(commands.Cog):
             ctx (Context): command usage context
             team (str): name of the team
         """
-        await ctx.message.delete()
+        if logger.level == getattr(logging, "INFO"):
+            await ctx.message.delete()
 
         blurb = get_blurb(team)
         blurb.update(get_author_info(ctx))
