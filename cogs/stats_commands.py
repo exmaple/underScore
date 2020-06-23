@@ -56,6 +56,12 @@ class Stats(commands.Cog):
     async def matchday(
         self, ctx, matchday=get_default_matchday(), season=get_default_season()
     ):
+        """Returns match scores for all matches on a specific matchday. Default is current matchday.
+
+        Args:
+            matchday (str): a number representing the matchday to lookup (eg. '23')
+            season (str): the latter year of the years relating to the season (eg. '2020' for the 2019/2020 season)
+        """
         if logger.level == getattr(logging, "INFO"):
             await ctx.message.delete()
 
