@@ -1,0 +1,7 @@
+[run]
+    source =
+        cogs/
+        utils/
+
+[report]
+    fail_under = 50.0
