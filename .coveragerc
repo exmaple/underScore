@@ -5,4 +5,4 @@
         utils/
 
 [report]
-    fail_under = 50.0
+    fail_under = 65.0
