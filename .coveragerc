@@ -1,6 +1,7 @@
 [run]
     source =
         cogs/
+        the_mines/
         utils/
 
 [report]
