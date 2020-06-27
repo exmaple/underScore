@@ -76,6 +76,7 @@ def get_team_str(target):
 
 def get_glance_schedule(team, season=get_default_season()):
     team = get_team_str(team)
+    results = {}
 
     # Get previous and current match
     url = f"https://www.fussballdaten.de/vereine/{team}/{season}/spielplan/"
@@ -94,23 +95,27 @@ def get_glance_schedule(team, season=get_default_season()):
         prev_score, _ = prev.find_all("span")
         curr_score, _ = curr.find_all("span")
 
+        results.update(build_matchup(prev.attrs["title"], prev_score.get_text()))
+        results.update(build_matchup(curr.attrs["title"], curr_score.get_text()))
+
     # Get next match
-    url = f"https://www.fussballdaten.de/vereine/{team}/{season}/"
-    with TemporaryFile("w+") as tmp:
-        tmp.write(download_raw_html(url))
-        tmp.seek(0)
-        soup = BeautifulSoup(tmp, "html.parser")
+    # This needs a rework.  We can't get next matches at the end of the season.
+    try:
+        url = f"https://www.fussballdaten.de/vereine/{team}/{season}/"
+        with TemporaryFile("w+") as tmp:
+            tmp.write(download_raw_html(url))
+            tmp.seek(0)
+            soup = BeautifulSoup(tmp, "html.parser")
 
-        (upcoming,) = soup.find_all("div", attrs={"class": "naechste-spiele"})
+            (upcoming,) = soup.find_all("div", attrs={"class": "naechste-spiele"})
 
-        # The list of upcoming matches depends on how many matches are left
-        # in the season.  We can't reliably list decompose so we'll have to pop
-        next = upcoming.find_all("a").pop(0)
-
-    results = {}
-    results.update(build_matchup(prev.attrs["title"], prev_score.get_text()))
-    results.update(build_matchup(curr.attrs["title"], curr_score.get_text()))
-    results.update(build_matchup(next.attrs["title"]))
+            # The list of upcoming matches depends on how many matches are left
+            # in the season.  We can't reliably list decompose so we'll have to pop
+            next = upcoming.find_all("a").pop(0)
+            results.update(build_matchup(next.attrs["title"]))
+    except:
+        logger.debug("No upcoming matches")
+        pass
 
     return results
 
