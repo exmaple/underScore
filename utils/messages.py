@@ -3,39 +3,39 @@ import logging
 
 logger = logging.getLogger("app")
 
+
 def help_title_card():
 
     logger.info("Sending help")
 
-    embed = discord.Embed(title='Help Info', color=0xffff72)
+    embed = discord.Embed(title="Help Info", color=0xFFFF72)
 
     embed.add_field(
-        name='How to use commands:',
-        value='`![command] [arg1 arg2 ...]`',
-        inline=False
+        name="How to use commands:", value="`![command] [arg1 arg2 ...]`", inline=False
     )
 
     # embed.set_footer(text='For more details:\n!help [command]')
 
     return embed
 
+
 def embedded_help_command(command):
-    embed = discord.Embed(title='`'+command.name+'`', color=0xffff72)
-    args = '> '
+    embed = discord.Embed(title="`" + command.name + "`", color=0xFFFF72)
+    args = "> "
     try:
         for arg_tuple in command.usage:
-            if command.usage.index(arg_tuple) == len(command.usage)-1:
-                args += arg_tuple[0] +': '+ arg_tuple[1] +'\n'
+            if command.usage.index(arg_tuple) == len(command.usage) - 1:
+                args += arg_tuple[0] + ": " + arg_tuple[1] + "\n"
             else:
-                args += arg_tuple[0] +': '+ arg_tuple[1] +'\n > '
+                args += arg_tuple[0] + ": " + arg_tuple[1] + "\n > "
     except TypeError:
-        args='No Args'
+        args = "No Args"
 
     embed.add_field(
         # name=f"{command}",
-        name='__Arguments:__',
+        name="__Arguments:__",
         value=args,
-        inline=False
+        inline=False,
     )
 
     return embed
@@ -71,8 +71,8 @@ def embedded_matchday_results(matchday, season, matchdays, matchdate):
     Returns:
         embed message object
     """
-    pre_season = int(season)-1
-    season = str(pre_season) +'\/'+ season
+    pre_season = int(season) - 1
+    season = str(pre_season) + "\/" + season
     title = "Matchday " + matchday + "  " + season
     embed = discord.Embed(title=title, description=matchdate, color=0xDC052D)
     for match in matchdays[matchdate]:
