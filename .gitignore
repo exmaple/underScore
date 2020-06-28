@@ -9,3 +9,4 @@ tests/__pycache__
 /the_mines/process/fussballdaten/matchday30.html
 /the_mines/process/fussballdaten/test.html
 /the_mines/process/fussballdaten/test.py
+.coverage

@@ -6,7 +6,7 @@ def test_get_dummy_data():
     for result in get_dummy_data():
         result_count += 1
         if isinstance(result, int):
-            assert result > 0
+            assert result >= 0
         elif isinstance(result, str):
             assert len(result) == 2
 

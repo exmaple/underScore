@@ -1,0 +1,8 @@
+[run]
+    source =
+        cogs/
+        the_mines/
+        utils/
+
+[report]
+    fail_under = 65.0
