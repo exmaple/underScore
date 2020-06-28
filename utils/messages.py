@@ -1,13 +1,21 @@
 import discord
+import logging
+
+logger = logging.getLogger("app")
 
 def help_title_card():
+
+    logger.info("Sending help")
+
     embed = discord.Embed(title='Help Info', color=0xffff72)
 
     embed.add_field(
         name='How to use commands:',
-        value='![command] [option1 option2 ...]',
+        value='`![command] [arg1 arg2 ...]`',
         inline=False
     )
+
+    embed.set_footer(text='For more details:\n!help [command]')
 
     return embed
 
@@ -24,8 +32,8 @@ def embedded_help_command(command):
         args='No Args'
 
     embed.add_field(
-        # name=f"{command}\n",
-        name='__Options:__',
+        # name=f"{command}",
+        name='__Arguments:__',
         value=args,
         inline=False
     )

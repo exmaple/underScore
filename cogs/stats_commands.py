@@ -36,7 +36,7 @@ class Stats(commands.Cog):
     async def help(self, ctx):
         """
             command.usage is a list containing one tuple for every command argument
-                eg. usage=[('arg (type)', 'description')]
+                eg. usage=[('arg', 'description')]
         """
 
         embed = help_title_card()
@@ -49,7 +49,7 @@ class Stats(commands.Cog):
 
     @commands.command(
         description='Returns the statistics for given player',
-        usage=[('player_name (str)', 'name of the player')]
+        usage=[('player_name', 'name of the player')]
     )
     async def getStats(self, ctx, player_name):
         """Returns the statistics for given player
@@ -75,7 +75,7 @@ class Stats(commands.Cog):
 
     @commands.command(
         description='Returns match scores for all matches on a specific matchday. Default is current matchday.',
-        usage=[('matchday (str)', 'A number representing the matchday to lookup (eg. \'23\')'), ('season (str)', 'Specify a season (eg. 2011/2012). Default is current season.')]
+        usage=[('matchday', 'A number representing the matchday to lookup (eg. \'23\')'), ('season', 'Specify a season (eg. 2011/2012). Default is current season.')]
     )
     async def matchday(
         self, ctx, matchday=get_default_matchday(), season=get_default_season()
@@ -83,8 +83,8 @@ class Stats(commands.Cog):
         """Returns match scores for all matches on a specific matchday. Default is current matchday.
 
         Args:
-            matchday (str): a number representing the matchday to lookup (eg. '23')
-            season (str): the latter year of the years relating to the season (eg. '2020' for the 2019/2020 season)
+            matchday: a number representing the matchday to lookup (eg. '23')
+            season: the latter year of the years relating to the season (eg. '2020' for the 2019/2020 season)
         """
         if logger.level == getattr(logging, "INFO"):
             await ctx.message.delete()
@@ -97,7 +97,7 @@ class Stats(commands.Cog):
     @commands.command(
         name='blurb',
         description='Displays an \'at a glance\' view of a teams season',
-        usage=[('team (str)', 'name of the team')]
+        usage=[('team', 'name of the team')]
     )
     async def blurb(self, ctx, team):
         """Displays an 'at a glance' view of a teams season
