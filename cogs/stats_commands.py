@@ -3,7 +3,12 @@ from discord.ext import commands
 from random import choice, randrange
 import logging
 
-from utils.messages import embedded_stats, embedded_matchday_results
+from utils.messages import (
+    embedded_stats,
+    embedded_matchday_results,
+    help_title_card,
+    embedded_help_command,
+)
 from utils.embedder import dict_to_embed
 from utils.dummy_data import get_dummy_data
 from utils.misc import get_author_info, get_default_matchday, get_default_season
@@ -27,9 +32,27 @@ class Stats(commands.Cog):
         Args:
             bot (Bot): bot to attach to
         """
+
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="help")
+    async def help(self, ctx):
+        """
+            command.usage is a list containing one tuple for every command argument
+                eg. usage=[('arg', 'description')]
+        """
+
+        embed = help_title_card()
+        await ctx.send(embed=embed)
+        for command in self.bot.commands:
+            if command.name != "help":
+                embed = embedded_help_command(command)
+                await ctx.send(embed=embed)
+
+    @commands.command(
+        description="Returns the statistics for given player",
+        usage=[("player_name", "name of the player")],
+    )
     async def getStats(self, ctx, player_name):
         """Returns the statistics for given player
 
@@ -52,15 +75,21 @@ class Stats(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(
+        description="Returns match scores for all matches on a specific matchday. Default is current matchday.",
+        usage=[
+            ("matchday", "A number representing the matchday to lookup (eg. '23')"),
+            ("season", "Specify a season (eg. 2011/2012). Default is current season."),
+        ],
+    )
     async def matchday(
         self, ctx, matchday=get_default_matchday(), season=get_default_season()
     ):
         """Returns match scores for all matches on a specific matchday. Default is current matchday.
 
         Args:
-            matchday (str): a number representing the matchday to lookup (eg. '23')
-            season (str): the latter year of the years relating to the season (eg. '2020' for the 2019/2020 season)
+            matchday: a number representing the matchday to lookup (eg. '23')
+            season: the latter year of the years relating to the season (eg. '2020' for the 2019/2020 season)
         """
         if logger.level == getattr(logging, "INFO"):
             await ctx.message.delete()
@@ -70,7 +99,11 @@ class Stats(commands.Cog):
             embed = embedded_matchday_results(matchday, season, results, key)
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(
+        name="blurb",
+        description="Displays an 'at a glance' view of a teams season",
+        usage=[("team", "name of the team")],
+    )
     async def blurb(self, ctx, team):
         """Displays an 'at a glance' view of a teams season
 

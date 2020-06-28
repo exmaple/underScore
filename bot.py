@@ -46,6 +46,7 @@ def main(token, log_level):
 
     logger.info("Setting up bot")
     bot = commands.Bot(command_prefix="!")
+    bot.remove_command("help")  # required to use custom help command
 
     @bot.event
     async def on_ready():
