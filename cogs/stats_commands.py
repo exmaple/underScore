@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 from random import choice, randrange
 import logging
-import inspect
-from optparse import OptionParser
 
 from utils.messages import (
     embedded_stats,

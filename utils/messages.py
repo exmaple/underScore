@@ -14,8 +14,6 @@ def help_title_card():
         name="How to use commands:", value="`![command] [arg1 arg2 ...]`", inline=False
     )
 
-    # embed.set_footer(text='For more details:\n!help [command]')
-
     return embed
 
 
