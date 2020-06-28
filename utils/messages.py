@@ -15,7 +15,7 @@ def help_title_card():
         inline=False
     )
 
-    embed.set_footer(text='For more details:\n!help [command]')
+    # embed.set_footer(text='For more details:\n!help [command]')
 
     return embed
 
