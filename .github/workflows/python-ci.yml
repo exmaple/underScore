@@ -1,9 +1,9 @@
-name: Python App CI
+name: Python CI
 
-on: [push]
+on: push
 
 jobs:
-  build:
+  test:
 
     runs-on: macos-latest
 
@@ -20,3 +20,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest -m "not online" -v --cov tests/
+    - name: Code format check
+      run: |
+        black . --check
