@@ -3,12 +3,7 @@ from discord.ext import commands
 from random import choice, randrange
 import logging
 
-from utils.messages import (
-    embedded_stats,
-    embedded_matchday_results,
-    help_title_card,
-    embedded_help_command,
-)
+from utils.help_embedder import title_card, embedded_help
 from utils.embedder import dict_to_embed
 from utils.dummy_data import get_dummy_data
 from utils.misc import get_author_info, get_default_matchday, get_default_season
@@ -42,11 +37,11 @@ class Stats(commands.Cog):
                 eg. usage=[('arg', 'description')]
         """
 
-        embed = help_title_card()
+        embed = title_card()
         await ctx.send(embed=embed)
         for command in self.bot.commands:
             if command.name != "help":
-                embed = embedded_help_command(command)
+                embed = embedded_help(command)
                 await ctx.send(embed=embed)
 
     @commands.command(
