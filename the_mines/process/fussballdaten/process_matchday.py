@@ -4,7 +4,7 @@ import logging
 from bs4 import BeautifulSoup
 from datetime import date
 from tempfile import TemporaryFile
-from utils.misc import umlaut
+from utils.misc import umlaut, format_date
 from ...download.get_html import download_raw_html
 
 
@@ -138,6 +138,25 @@ def get_initial_data(soup):
     return dates, matches, score_list
 
 
+def prepare_output(matchdays, matchday):
+    fields = {}
+
+    for item, matches in matchdays.items():
+        for match in matches:
+            team1, team2 = match
+            team1_name, team1_score = team1
+            team2_name, team2_score = team2
+            fields[f"{team1_name} {team1_score}:{team2_score} {team2_name}"] = "Full Time"
+
+    messy_date, = [key for key in matchdays.keys()]
+    date = format_date(messy_date)
+    return {
+        "title": f"Matchday {matchday}",
+        "description": f"{date}",
+        "fields": fields,
+    }
+
+
 def process_results(matchday, season):
     """Scrape html for matchday results using BeautifulSoup
 
@@ -190,4 +209,4 @@ def process_results(matchday, season):
             if played == False:
                 live_match(match, matchup_score, matchdays)
 
-    return matchdays
+    return prepare_output(matchdays, matchday)

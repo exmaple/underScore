@@ -95,9 +95,10 @@ class Stats(commands.Cog):
             await ctx.message.delete()
 
         results = process_results(matchday, season)
-        for key in results:
-            embed = embedded_matchday_results(matchday, season, results, key)
-            await ctx.send(embed=embed)
+        results.update(get_author_info(ctx))
+        logger.info("Sending matchday results")
+        embed = dict_to_embed(results, inline=False)
+        await ctx.send(embed=embed)
 
     @commands.command(
         name="blurb",

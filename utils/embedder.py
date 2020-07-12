@@ -1,12 +1,15 @@
 import discord
 
 
-def dict_to_embed(d):
+def dict_to_embed(d, inline=True):
     if "title" in d.keys():
         embed = discord.Embed(title=d["title"], color=0xDC052D)
 
     if "name" in d.keys() and "icon_url" in d.keys():
         embed.set_author(name=d["name"], icon_url=d["icon_url"])
+
+    if "description" in d.keys():
+        embed.description = d["description"]
 
     # add if at some point
     embed.set_thumbnail(
@@ -15,6 +18,6 @@ def dict_to_embed(d):
 
     if "fields" in d.keys():
         for name, stat in d["fields"].items():
-            embed.add_field(name=name, value=stat, inline=True)
+            embed.add_field(name=name, value=stat, inline=inline)
 
     return embed
