@@ -63,16 +63,10 @@ class Stats(commands.Cog):
         if logger.level == getattr(logging, "INFO"):
             await ctx.message.delete()
 
-        height, weight, position, gp, goals, assists = get_dummy_data()
-        embed = embedded_stats(
-            player_name,
-            height=height,
-            weight=weight,
-            position=position,
-            gp=gp,
-            goals=goals,
-            assists=assists,
-        )
+        stats = get_dummy_data(player_name)
+        stats.update(get_author_info(ctx))
+        embed = dict_to_embed(stats)
+        logger.info("Sending player stats")
         await ctx.send(embed=embed)
 
     @commands.command(
